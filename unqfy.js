@@ -97,6 +97,10 @@ class UNQfy {
 
   }
 
+  searchByName(content) {
+    return this._service.searchByName(content)
+  }
+
   save(filename) {
     const serializedData = picklify.picklify(this);
     fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2));
