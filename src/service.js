@@ -1,12 +1,13 @@
 const Track = require('./track')
 const Artist = require('./artist')
 const Album = require('./album')
+const PlaylistGenerator = require('./playlistGenerator')
 class Service {
 
     constructor(){
         this._artists = new Map;
-        this._playlist = new Map;
-        //falta this._playlistGenerator
+        this._playlists = new Map;
+        this._playlistGenerator = new PlaylistGenerator();
     }
 
     addArtist(artistData, keyGen) {
@@ -32,12 +33,6 @@ class Service {
         this._artists.forEach(artist => {
             if(artist && artist.hasAlbumWidthId(albumId)){albumOwner= artist;
             }})
-        /*for (let idArtist of this._artists.keys()) {
-            let artist = this._artists.get(idArtist);
-            if(artist && artist.hasAlbumWidthId(albumId)){
-                albumOwner= artist;
-            }
-        }*/
        // if(!albumOwner) //tirar ex
         
         const createdTrack = new Track(id, albumId, trackData.name, trackData.duration, trackData.genres);
@@ -45,14 +40,25 @@ class Service {
         return createdTrack;
     }
 
-    createPlaylist(name, genresToInclude, maxDuration) {
+    generatePlayList(name, genresToInclude, maxDuration,keyGen) {
         // falta recolector de tracks, playlist.js y playlistGenerator.js
-        this._playlist.push(this._playlistGenerator.generate(name, genresToInclude, maxDuration))
+
+        const id = keyGen.getKeyPlayList();
+        let playlist = this._playlistGenerator.generate(id,name,genresToInclude, maxDuration, this._artists)
+        this._playlists.set(id,playlist)
+        return playlist
     }
 
     searchByName(content) {
-        //return this.searchArtistByName(content).concat(this.searchAlbumByName(content).concat(this.searchTrackByName(content)))
-        return {artists: this.searchArtistByName(content), albums: this.searchAlbumByName(content), tracks: this.searchTrackByName(content)}
+        let res = {
+            artists: this.searchArtistByName(content), 
+            albums: this.searchAlbumByName(content), 
+            tracks: this.searchTrackByName(content),
+            playlists: this.searchPlaylistByName(content)
+        }
+        console.log(res)
+
+        return res;
     }
     searchArtistByName(content) {
         let artist_with_name = []
@@ -62,29 +68,16 @@ class Service {
     searchAlbumByName(content) {
         let album_with_name = []
         this._artists.forEach(artist => album_with_name = album_with_name.concat(artist.searchAlbumByName(content)))
-        /*for (let artistID in this._artists.keys()) {
-            let artist = this._artists.get(artistID)
-            album_with_name.concat(artist.searchAlbumByName(content))
-        }*/
         return album_with_name
     }
     searchTrackByName(content) {
         let track_with_name = []
         this._artists.forEach(artist => {track_with_name = track_with_name.concat(artist.searchTrackByName(content));})
-        /*for (let artistID in this._artists.keys()) {
-            let artist = this._artists.get(artistID)
-            track_with_name.concat(artist.searchTrackByName(content)) //falta lógica dentro de album y track
-        }*/
         return track_with_name
     }
     searchPlaylistByName(content) { //falta generar playlist.js y logica
         const playlist_with_name = []
-        for (let playlistID in this._playlist.keys()) {
-            let playlist = this._playlist.get(playlistID)
-            if (playlist.name.contains(content)) {
-                playlist_with_name.push(artist)
-            }
-        }
+        this._playlists.forEach(playlist => {playlist.name.includes(content)?playlist_with_name.push(playlist):undefined})
         return playlist_with_name
     }
 
@@ -98,7 +91,5 @@ class Service {
         this._artists.forEach(artist => tracks = tracks.concat(artist.getTracksMatchingArtist(artistName)));
         return tracks
     }
-
-
 }
 module.exports = Service;

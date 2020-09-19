@@ -4,6 +4,7 @@ class KeyGen {
         this._idArtist = 0;
         this._idAlbum = 0;
         this._idTrack = 0;
+        this._idPlaylist = 0;
     }
 
     getKeyArtist(){
@@ -21,6 +22,12 @@ class KeyGen {
         const id = this._idTrack;
         this._idTrack++;
         return id;
+    }
+    getKeyPlayList(){
+        const id = this._idPlaylist;
+        this._idPlaylist++;
+        return id;
+
     }
 
 }

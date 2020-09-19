@@ -1,13 +1,24 @@
 
 
 class Playlist {
-    constructor(name, genre, duration) {
+    constructor(id, name, genres, duration, tracks) {
+        this._id = id
         this._name = name
-        this._genre = genre
+        this._genres = genres
         this._max_duration = duration
-        this._tracks = this._track_list(genre, duration)
+        this._tracks = tracks
     }
-    _track_list(genre, max_duration) {
-        
+    get tracks() {
+        return this._tracks
+    }
+    hasTrack(track) {
+        return this._tracks.some(t => t === track)
+    }
+    get name() {
+        return this._name
+    }
+    get duration(){
+        return this._max_duration
     }
 }
+module.exports = Playlist;
