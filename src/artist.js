@@ -22,17 +22,25 @@ class Artist {
     addSongToAlbum(albumId, track) {
         const album = this._albums.find( album => album.sameKey(albumId))
 
-        if(!album) //err
+        //if(!album) //err no hay album
 
         album.addTrack(track)
     }
     searchAlbumByName(content) {
-        console.log(this._albums.filter(album => album.name.includes(content)))
         return this._albums.filter(album => album.name.includes(content))
     }
     searchTrackByName(content){
-        return this._albums.reduce((track_list, album) => {track_list.concat(album.searchTrackByName(content))}, [])
+        return this._albums.reduce((track_list, album) => track_list.concat(album.searchTrackByName(content)),[])
+    }
+    getTracksMatchingGenres(genres){
+        return this._albums.reduce((track_list, album) => track_list.concat(album.getTracksMatchingGenres(genres)),[])
+    }
+    getTracksMatchingArtist(artistName){
+        if(this._name != artistName) {
+            return []
+        }
+        return this._albums.reduce((tracks,album) => { 
+            return tracks.concat(album.tracks)},[]);
     }
 }
-
 module.exports = Artist;

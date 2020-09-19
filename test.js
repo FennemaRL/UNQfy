@@ -24,7 +24,6 @@ describe('Add, remove and filter data', () => {
   beforeEach(() => {
     unqfy = new libunqfy.UNQfy();
   });
-
   it('should add an artist', () => {
     const artist = createAndAddArtist(unqfy, 'Guns n\' Roses', 'USA');
     assert.equal(artist.name, 'Guns n\' Roses');
@@ -51,7 +50,6 @@ describe('Add, remove and filter data', () => {
     assert.equal(track.genres.includes('hard rock'), true);
     assert.lengthOf(track.genres, 2);
   });
-
   it('should find different things by name', () => {
     const artist1 = createAndAddArtist(unqfy, 'Guns n\' Roses', 'USA');
     const album1 = createAndAddAlbum(unqfy, artist1.id, 'Roses Album', 1987);

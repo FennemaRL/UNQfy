@@ -55,13 +55,13 @@ class Service {
         return {artists: this.searchArtistByName(content), albums: this.searchAlbumByName(content), tracks: this.searchTrackByName(content)}
     }
     searchArtistByName(content) {
-        const artist_with_name = []
+        let artist_with_name = []
         this._artists.forEach(artist => artist.name.includes(content)?artist_with_name.push(artist):undefined)
         return artist_with_name
     }
     searchAlbumByName(content) {
-        const album_with_name = []
-        this._artists.forEach(artist => album_with_name.concat(artist.searchAlbumByName(content)))
+        let album_with_name = []
+        this._artists.forEach(artist => album_with_name = album_with_name.concat(artist.searchAlbumByName(content)))
         /*for (let artistID in this._artists.keys()) {
             let artist = this._artists.get(artistID)
             album_with_name.concat(artist.searchAlbumByName(content))
@@ -69,8 +69,8 @@ class Service {
         return album_with_name
     }
     searchTrackByName(content) {
-        const track_with_name = []
-        this._artists.forEach(artist => {track_with_name.concat(artist.searchTrackByName(content));console.log(artist)})
+        let track_with_name = []
+        this._artists.forEach(artist => {track_with_name = track_with_name.concat(artist.searchTrackByName(content));})
         /*for (let artistID in this._artists.keys()) {
             let artist = this._artists.get(artistID)
             track_with_name.concat(artist.searchTrackByName(content)) //falta lógica dentro de album y track
@@ -87,5 +87,18 @@ class Service {
         }
         return playlist_with_name
     }
+
+    getTracksMatchingGenres(genres) {
+        let tracks = []
+        this._artists.forEach(artist => tracks = tracks.concat(artist.getTracksMatchingGenres(genres)));
+        return tracks
+    }
+    getTracksMatchingArtist(artistName) {
+        let tracks = []
+        this._artists.forEach(artist => tracks = tracks.concat(artist.getTracksMatchingArtist(artistName)));
+        return tracks
+    }
+
+
 }
 module.exports = Service;

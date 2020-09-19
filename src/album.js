@@ -15,6 +15,8 @@ class Album {
 
     addTrack(track){
         this._tracks.push(track);
+
+        
     }
     
     sameKey(albumid) {
@@ -24,6 +26,14 @@ class Album {
     searchTrackByName(content) {
         return this._tracks.filter(track => track.name.includes(content))
     }
+    
+    getTracksMatchingGenres(genres){
+        return this._tracks.filter(track => track._genres.some(gen => genres.includes(gen)))
+    }
+    get tracks(){
+        return this._tracks
+    }
+
 }
 
 
