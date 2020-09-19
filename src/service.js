@@ -29,12 +29,15 @@ class Service {
     addTrack(albumId, trackData, keyGen) {
         const id = keyGen.getKeyTrack();
         let albumOwner;
-        for (let idArtist of this._artists.keys()) {
+        this._artists.forEach(artist => {
+            if(artist && artist.hasAlbumWidthId(albumId)){albumOwner= artist;
+            }})
+        /*for (let idArtist of this._artists.keys()) {
             let artist = this._artists.get(idArtist);
             if(artist && artist.hasAlbumWidthId(albumId)){
                 albumOwner= artist;
             }
-        }
+        }*/
        // if(!albumOwner) //tirar ex
         
         const createdTrack = new Track(id, albumId, trackData.name, trackData.duration, trackData.genres);
@@ -48,37 +51,35 @@ class Service {
     }
 
     searchByName(content) {
-
+        //return this.searchArtistByName(content).concat(this.searchAlbumByName(content).concat(this.searchTrackByName(content)))
+        return {artists: this.searchArtistByName(content), albums: this.searchAlbumByName(content), tracks: this.searchTrackByName(content)}
     }
     searchArtistByName(content) {
         const artist_with_name = []
-        for (let artistID in this._artists.values) {
-            let artist = this._artists.get(artistID)
-            if (artist.name.contains(content)) {
-                artist_with_name.push(artist)
-            }
-        }
+        this._artists.forEach(artist => artist.name.includes(content)?artist_with_name.push(artist):undefined)
         return artist_with_name
     }
     searchAlbumByName(content) {
         const album_with_name = []
-        for (let artistID in this._artists.values) {
+        this._artists.forEach(artist => album_with_name.concat(artist.searchAlbumByName(content)))
+        /*for (let artistID in this._artists.keys()) {
             let artist = this._artists.get(artistID)
-            album_with_name.push(artist.searchAlbumByName(content)) //falta lógica dentro de album
-        }
+            album_with_name.concat(artist.searchAlbumByName(content))
+        }*/
         return album_with_name
     }
     searchTrackByName(content) {
         const track_with_name = []
-        for (let artistID in this._artists.values) {
+        this._artists.forEach(artist => {track_with_name.concat(artist.searchTrackByName(content));console.log(artist)})
+        /*for (let artistID in this._artists.keys()) {
             let artist = this._artists.get(artistID)
-            track_with_name.push(artist.searchTrackByName(content)) //falta lógica dentro de album y track
-        }
+            track_with_name.concat(artist.searchTrackByName(content)) //falta lógica dentro de album y track
+        }*/
         return track_with_name
     }
     searchPlaylistByName(content) { //falta generar playlist.js y logica
         const playlist_with_name = []
-        for (let playlistID in this._playlist.values) {
+        for (let playlistID in this._playlist.keys()) {
             let playlist = this._playlist.get(playlistID)
             if (playlist.name.contains(content)) {
                 playlist_with_name.push(artist)

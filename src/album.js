@@ -20,6 +20,10 @@ class Album {
     sameKey(albumid) {
         return this._id === albumid
     }
+
+    searchTrackByName(content) {
+        return this._tracks.filter(track => track.name.includes(content))
+    }
 }
 
 

@@ -26,7 +26,13 @@ class Artist {
 
         album.addTrack(track)
     }
+    searchAlbumByName(content) {
+        console.log(this._albums.filter(album => album.name.includes(content)))
+        return this._albums.filter(album => album.name.includes(content))
+    }
+    searchTrackByName(content){
+        return this._albums.reduce((track_list, album) => {track_list.concat(album.searchTrackByName(content))}, [])
+    }
 }
-
 
 module.exports = Artist;
