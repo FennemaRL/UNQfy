@@ -2,6 +2,7 @@
 
 const fs = require('fs'); // necesitado para guardar/cargar unqfy
 const unqmod = require('./unqfy'); // importamos el modulo unqfy
+const { throws } = require('assert');
 
 // Retorna una instancia de UNQfy. Si existe filename, recupera la instancia desde el archivo.
 function getUNQfy(filename = 'data.json') {
@@ -45,10 +46,56 @@ function saveUNQfy(unqfy, filename = 'data.json') {
    4. Guardar el estado de UNQfy (saveUNQfy)
 
 */
+class Command {
+  
+  constructor(criteria, fn) {
+    this._criteria = criteria;
+    this._fn = fn ;
+  }
+  canHandle(command){
+    return criteria === command
+  }
+  do(unquify, data){
+    this._fn(unquify,data);
+  }
+  sameCriteria(criteria ){
+    return this._criteria? this._criteria === criteria : true
+  }
+}
+let commands =[]
+
+let commandAddArtist= (unquify, data) => unquify.addArtist(data)
+commands.push(new Command("AddArtist", commandAddArtist))
+let commandAddTrack= (unquify, data) => unquify.addTrack(data)
+commands.push(new Command("AddTrack", commandAddTrack))
+let commandAddAlbum= (unquify, data) => unquify.addAlbum(data)
+commands.push(new Command("AddAlbum", commandAddAlbum))
+let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
+commands.push(new Command(undefined, commandErrorParams))
+
+
+
 
 function main() {
   console.log('arguments: ');
-  process.argv.forEach(argument => console.log(argument));
+  
+  let [n, n2, commando, ...arg ] = process.argv
+  let unqfy = getUNQfy();
+  const commandToExec = commands.find(command => command.sameCriteria(commando));
+
+  const data = {commando}
+  
+  let argsWithNumbers = arg.map( param => Number.isSafeInteger(param) ? Number(param) : param) 
+  argsWithNumbers.forEach((value,indx) => {
+    if(! (indx % 2) ){
+      data[value] = argsWithNumbers[indx+1]
+    }
+
+  })
+  commandToExec.do(unqfy,data)
+
+  unqfy.save(); // fata crear comandos y archivo para carga y comando npm
+  console.log(unqfy, data, commandToExec);
 }
 
 main();
