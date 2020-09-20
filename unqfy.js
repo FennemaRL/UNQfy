@@ -108,6 +108,27 @@ class UNQfy {
     return this._service.searchByName(content)
   }
 
+  getAllArtists() {
+    let all_artists = this._service.getAllArtists()
+    all_artists.forEach(artist => console.log(artist))
+    return all_artists
+  }
+  getAllAlbums() {
+    let all_albums = this._service.getAllAlbums()
+    all_albums.forEach(album => console.log(album))
+    return all_albums
+  }
+  getAllTracks() {
+    let all_tracks = this._service.getAllTracks()
+    all_tracks.forEach(track => console.log(track))
+    return all_tracks
+  }
+  getAllPlaylists() {
+    let all_playlists = this._service.getAllPlaylists()
+    all_playlists.forEach(playlist => console.log(playlist))
+    return all_playlists
+  }
+
   save(filename) {
     const serializedData = picklify.picklify(this);
     fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2));
