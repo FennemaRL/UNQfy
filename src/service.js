@@ -91,5 +91,26 @@ class Service {
         this._artists.forEach(artist => tracks = tracks.concat(artist.getTracksMatchingArtist(artistName)));
         return tracks
     }
+
+    getAllArtists() {
+        this._artists.forEach(artist => console.log(artist))
+        return this._artists
+    }
+    getAllAlbums() {
+        let albums = []
+        this._artist.forEach(artist => albums.concat(artist.getAllAlbums()))
+        albums.forEach(album => console.log(album))
+        return albums
+    }
+    getAllTracks() {
+        let tracks = []
+        this._artist.forEach(artist => tracks.concat(artist.getAllTracks()))
+        tracks.forEach(track => console.log(track))
+        return tracks
+    }
+    getAllPlaylists() {
+        this._playlists.forEach(playlist => console.log(playlist))
+        return this._playlists
+    }
 }
 module.exports = Service;

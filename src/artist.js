@@ -42,5 +42,14 @@ class Artist {
         return this._albums.reduce((tracks,album) => { 
             return tracks.concat(album.tracks)},[]);
     }
+
+    getAllAlbums() {
+        return this._albums
+    }
+    getAllTracks() {
+        let tracks = []
+        this._albums.forEach(album => tracks.concat(album.tracks()))
+        return tracks
+    }
 }
 module.exports = Artist;
