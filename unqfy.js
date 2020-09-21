@@ -60,19 +60,19 @@ class UNQfy {
   }
 
   getArtistById(id) {
-
+    return this._service.getArtistById(id)
   }
 
   getAlbumById(id) {
-
+    return this._service.getAlbumById(id)
   }
 
   getTrackById(id) {
-
+    return this._service.getTrackById(id)
   }
 
   getPlaylistById(id) {
-
+    return this._service.getPlaylistById(id)
   }
 
   // genres: array de generos(strings)
@@ -129,6 +129,8 @@ class UNQfy {
     return all_playlists
   }
 
+
+
   save(filename) {
     const serializedData = picklify.picklify(this);
     fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2));
@@ -137,7 +139,7 @@ class UNQfy {
   static load(filename) {
     const serializedData = fs.readFileSync(filename, {encoding: 'utf-8'});
     //COMPLETAR POR EL ALUMNO: Agregar a la lista todas las clases que necesitan ser instanciadas
-    const classes = [UNQfy, Artist,Service, Playlist, Album, Track, KeyGen, PlaylistGenerator];
+    const classes = [UNQfy, Artist,Service, Playlist, Album, Track, KeyGen, PlaylistGenerator, Map];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }
 }

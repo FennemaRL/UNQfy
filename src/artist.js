@@ -16,9 +16,13 @@ class Artist {
         this._albums.push(album);
     }
 
-    hasAlbumWidthId(albumId) {
+    hasAlbumWithId(albumId) {
         return this._albums.some(album => album.sameKey(albumId))
     }
+    hasTrackWithId(trackId) {
+        return this._albums.some(album => album.hasTrackWithId(trackId))
+    }
+
     addSongToAlbum(albumId, track) {
         const album = this._albums.find( album => album.sameKey(albumId))
 
@@ -50,6 +54,24 @@ class Artist {
         let tracks = []
         this._albums.forEach(album => tracks.concat(album.tracks()))
         return tracks
+    }
+
+    getAlbumById(id) {
+        return this._albums.find(album => (album.id === id))
+    }
+    getTrackById(id) {
+        let track_owner = this._albums.find(album => (album.hasTrackWithId(id)))
+        return track_owner.getTrackById(id)
+    }
+
+    deleteAlbum(albumID) {
+        let album_to_delete = this._albums.find(album => (album.id === albumID))
+        this._albums = this._albums.filter(album => (album.id != albumID))
+        return album_to_delete
+    }
+    deleteTrack(trackID) {
+        let track_owner = this._albums.find(album => (album.hasTrackWithId(trackID)))
+        return track_owner.deleteTrack(trackID)
     }
 }
 module.exports = Artist;

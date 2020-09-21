@@ -11,6 +11,11 @@ class Service {
     }
 
     addArtist(artistData, keyGen) {
+        this._artists.forEach(artist => {
+            if (artist.name === artistData.name) {
+                throw new Error(`Artist with name ${artistData.name} already exists`)
+            }
+        })
         const id = keyGen.getKeyArtist();
         const newArtist = new Artist(id, artistData.name, artistData.country);
         this._artists.set(id,newArtist);
@@ -21,7 +26,8 @@ class Service {
         const id = keyGen.getKeyAlbum();
         const newAlbum = new Album(id, artistId, albumData.name, albumData.year);
         const artistFind = this._artists.get(artistId);
-        if(!artistId) { // artista no existe
+        if(!artistFind) { 
+            throw new Error(`Artist with ID ${artistId} was not found`)
         }
         artistFind.addAlbum(newAlbum);
         return newAlbum;
@@ -33,7 +39,9 @@ class Service {
         this._artists.forEach(artist => {
             if(artist && artist.hasAlbumWidthId(albumId)){albumOwner= artist;
             }})
-       // if(!albumOwner) //tirar ex
+        if(!albumOwner){
+            throw new Error(`Album with ID ${albumId} was not found`)
+        }
         
         const createdTrack = new Track(id, albumId, trackData.name, trackData.duration, trackData.genres);
         albumOwner.addSongToAlbum(albumId, createdTrack)
@@ -41,8 +49,6 @@ class Service {
     }
 
     generatePlayList(name, genresToInclude, maxDuration,keyGen) {
-        // falta recolector de tracks, playlist.js y playlistGenerator.js
-
         const id = keyGen.getKeyPlayList();
         let playlist = this._playlistGenerator.generate(id,name,genresToInclude, maxDuration, this._artists)
         this._playlists.set(id,playlist)
@@ -111,6 +117,105 @@ class Service {
     getAllPlaylists() {
         //this._playlists.forEach(playlist => console.log(playlist))
         return this._playlists
+    }
+
+    getArtistById(id) {
+        let artist_with_id = this._artists.get(id)
+        if (!artist_with_id) {
+            throw new Error (`Artist with ID ${id} was not found`)
+        }
+        return artist_with_id
+    }
+    getAlbumById(id) {
+        let album_owner = undefined
+        this._artists.forEach(artist => 
+            {
+                if (artist.hasAlbumWithId(id)) {
+                    album_owner = artist
+                }
+            }
+        )
+        if (!album_owner) {
+            throw new Error(`Album with ID ${id} was not found`)
+        } else {
+            return album_owner.getAlbumById(id)
+        }
+    }
+    getTrackById(id) {
+        let track_owner = undefined
+        this._artists.forEach(artist => 
+            {
+                if (artist.hasTrackWithId(id)) {
+                    track_owner = artist
+                }
+            }
+        )
+        if (!track_owner) {
+            throw new Error(`Track with ID ${id} was not found`)
+        } else {
+            return track_owner.getTrackById(id)
+        }
+    }
+    getPlaylistById(id) {
+        let playlist_with_id = this._playlists.get(id)
+        if (!playlist_with_id) {
+            throw new Error (`Playlist with ID ${id} was not found`)
+        }
+        return playlist_with_id
+    }
+
+
+    deleteArtist(artistID) {
+        let artist_to_delete = this._artists.get(artistID)
+        if (!artist_to_delete) {
+            throw new Error(`Artist with ID ${artistID} was not found`)
+        } else {
+            this._artists.delete(artistID)
+            let tracks_to_delete = artist_to_delete.getAllTracks()
+            this._playlists.forEach(playlist => playlist.deleteTracks(tracks_to_delete))
+            //artist_to_delete.getAllAlbums().forEach(album => this.deleteAlbum(album.id))
+        }
+    }
+    deleteAlbum(albumID) {
+        let album_owner = undefined
+        this._artists.forEach(artist => 
+            {
+                if (artist.hasAlbumWithId(albumID)) {
+                    album_owner = artist
+                }
+            }
+        )
+        if (!album_owner) {
+            throw new Error(`Album with ID ${albumID} was not found`)
+        } else {
+            let album_to_delete = album_owner.deleteAlbum(albumID)
+            let tracks_to_delete = album_to_delete.tracks
+            this._playlists.forEach(playlist => playlist.deleteTracks(tracks_to_delete))
+        }
+    }
+    deleteTrack(trackID) {
+        let track_owner = undefined
+        this._artists.forEach(artist => 
+            {
+                if (artist.hasTrackWithId(trackID)) {
+                    track_owner = artist
+                }
+            }
+        )
+        if (!track_owner) {
+            throw new Error(`Track with ID ${trackID} was not found`)
+        } else {
+            let track_to_delete = track_owner.deleteTrack(trackID)
+            this._playlists.forEach(playlist => playlist.deleteTracks(track_to_delete))
+        }
+    }
+    deletePlaylist(playlistID) {
+        let playlist_to_eliminate = this._playlists.get(playlistID)
+        if (!playlist_to_eliminate) {
+            throw new Error(`Playlist with ID ${playlistID} was not found`)
+        } else {
+            this._playlists.delete(playlistID)
+        }
     }
 }
 module.exports = Service;

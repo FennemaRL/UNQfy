@@ -14,9 +14,10 @@ class Album {
     get year(){ return this._year;}
 
     addTrack(track){
+        if (this._tracks.some(album_track => album_track.name === track.name)) {
+            throw new Error(`Track with name "${track.name}" already exists in album with name "${this._name}"`)
+        }
         this._tracks.push(track);
-
-        
     }
     
     sameKey(albumid) {
@@ -26,12 +27,25 @@ class Album {
     searchTrackByName(content) {
         return this._tracks.filter(track => track.name.includes(content))
     }
+
+    hasTrackWithId(trackId) {
+        return this._tracks.some(track => (track.id === trackId))
+    }
     
     getTracksMatchingGenres(genres){
         return this._tracks.filter(track => track._genres.some(gen => genres.includes(gen)))
     }
     get tracks(){
         return this._tracks
+    }
+    getTrackById(id) {
+        return this._tracks.find(track => (track.id === id))
+    }
+
+    deleteTrack(trackID) {
+        let track_to_delete = this._tracks.find(track => (track.id === trackID))
+        this._tracks = this._tracks.filter(track => (track.id != trackID))
+        return [track_to_delete]
     }
 
 }
