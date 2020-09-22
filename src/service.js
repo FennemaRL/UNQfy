@@ -40,7 +40,9 @@ class Service {
         let albumOwner;
         Object.keys(this._artists).forEach(artistId => {
             let artist = this._artists[artistId]
-            if(artist && artist.hasAlbumWithId(albumId)){albumOwner= artist;}
+            if(artist && artist.hasAlbumWithId(albumId)){
+                albumOwner= artist;
+            }
         })
         if(!albumOwner){
             throw new Error(`Album with ID ${albumId} was not found`)
