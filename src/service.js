@@ -23,6 +23,7 @@ class Service {
     }
     
     addAlbum(artistId, albumData, keyGen) {
+        console.log(this._artists)
         const id = keyGen.getKeyAlbum();
         const newAlbum = new Album(id, artistId, albumData.name, albumData.year);
         const artistFind = this._artists.get(artistId);

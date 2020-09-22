@@ -139,7 +139,7 @@ class UNQfy {
   static load(filename) {
     const serializedData = fs.readFileSync(filename, {encoding: 'utf-8'});
     //COMPLETAR POR EL ALUMNO: Agregar a la lista todas las clases que necesitan ser instanciadas
-    const classes = [UNQfy, Artist,Service, Playlist, Album, Track, KeyGen, PlaylistGenerator, Map];
+    const classes = [UNQfy, Artist,Service, Playlist, Album, Track, KeyGen, PlaylistGenerator];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }
 }

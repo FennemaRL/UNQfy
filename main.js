@@ -14,6 +14,7 @@ function getUNQfy(filename = 'data.json') {
 }
 
 function saveUNQfy(unqfy, filename = 'data.json') {
+  console.log(filename)
   unqfy.save(filename);
 }
 
@@ -67,10 +68,14 @@ let commands =[]
 
 let commandAddArtist= (unquify, data) => unquify.addArtist(data)
 commands.push(new Command("AddArtist", commandAddArtist))
+
+
 let commandAddTrack= (unquify, data) => unquify.addTrack(data.albumId, data)
 commands.push(new Command("AddTrack", commandAddTrack))
+
 let commandAddAlbum= (unquify, data) => unquify.addAlbum(data.artistId, data)
 commands.push(new Command("AddAlbum", commandAddAlbum))
+
 let commandCreatePlaylist= (unquify, data) => unquify.createPlaylist(data.name, data.genres, data.maxDuration)
 commands.push(new Command("CreatePlaylist", commandCreatePlaylist))
 
@@ -82,9 +87,10 @@ commands.push(new Command(undefined, commandErrorParams))
 
 function main() {
   console.log('arguments: ');
-  
+
   let [n, n2, commando, ...arg ] = process.argv
   let unqfy = getUNQfy();
+  console.log(unqfy)
   const commandToExec = commands.find(command => command.sameCriteria(commando));
 
   const data = {commando}
@@ -97,9 +103,10 @@ function main() {
 
   })
   commandToExec.do(unqfy,data)
+  console.log(unqfy)
+  saveUNQfy(unqfy);
 
-  //unqfy.save(); // fata crear comandos y archivo para carga y comando npm
-  console.log(unqfy, data, commandToExec);
+  // fata crear comandos y archivo para carga y comando npm
 }
 
 main();
