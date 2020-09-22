@@ -5,20 +5,21 @@ const PlaylistGenerator = require('./playlistGenerator')
 class Service {
 
     constructor(){
-        this._artists = new Map;
-        this._playlists = new Map;
+        this._artists = {};
+        this._playlists = {};
         this._playlistGenerator = new PlaylistGenerator();
     }
 
     addArtist(artistData, keyGen) {
-        this._artists.forEach(artist => {
+        Object.keys(this._artists).forEach(artistId => {
+            let artist = this._artists[artistId]
             if (artist.name === artistData.name) {
                 throw new Error(`Artist with name ${artistData.name} already exists`)
             }
         })
         const id = keyGen.getKeyArtist();
         const newArtist = new Artist(id, artistData.name, artistData.country);
-        this._artists.set(id,newArtist);
+        this._artists[id]= newArtist;
         return newArtist;
     }
     
@@ -26,7 +27,7 @@ class Service {
         console.log(this._artists)
         const id = keyGen.getKeyAlbum();
         const newAlbum = new Album(id, artistId, albumData.name, albumData.year);
-        const artistFind = this._artists.get(artistId);
+        const artistFind = this._artists[artistId];
         if(!artistFind) { 
             throw new Error(`Artist with ID ${artistId} was not found`)
         }
@@ -37,9 +38,10 @@ class Service {
     addTrack(albumId, trackData, keyGen) {
         const id = keyGen.getKeyTrack();
         let albumOwner;
-        this._artists.forEach(artist => {
-            if(artist && artist.hasAlbumWidthId(albumId)){albumOwner= artist;
-            }})
+        Object.keys(this._artists).forEach(artistId => {
+            let artist = this._artists[artistId]
+            if(artist && artist.hasAlbumWidthId(albumId)){albumOwner= artist;}
+        })
         if(!albumOwner){
             throw new Error(`Album with ID ${albumId} was not found`)
         }
@@ -52,7 +54,7 @@ class Service {
     generatePlayList(name, genresToInclude, maxDuration,keyGen) {
         const id = keyGen.getKeyPlayList();
         let playlist = this._playlistGenerator.generate(id,name,genresToInclude, maxDuration, this._artists)
-        this._playlists.set(id,playlist)
+        this._playlists[id]=playlist
         return playlist
     }
 
@@ -69,17 +71,26 @@ class Service {
     }
     searchArtistByName(content) {
         let artist_with_name = []
-        this._artists.forEach(artist => artist.name.includes(content)?artist_with_name.push(artist):undefined)
+        Object.keys(this._artists).forEach(artistId => {
+            let artist = this._artists[artistId];
+            artist.name.includes(content)?artist_with_name.push(artist):undefined
+        })
         return artist_with_name
     }
     searchAlbumByName(content) {
         let album_with_name = []
-        this._artists.forEach(artist => album_with_name = album_with_name.concat(artist.searchAlbumByName(content)))
+        Object.keys(this._artists).forEach(artistId => {
+            let artist = this._artists[artistId];
+            album_with_name = album_with_name.concat(artist.searchAlbumByName(content))
+        })
         return album_with_name
     }
     searchTrackByName(content) {
         let track_with_name = []
-        this._artists.forEach(artist => {track_with_name = track_with_name.concat(artist.searchTrackByName(content));})
+        Object.keys(this._artists).forEach(artistId => {
+            let artist = this._artists[artistId];
+            track_with_name = track_with_name.concat(artist.searchTrackByName(content));
+        })
         return track_with_name
     }
     searchPlaylistByName(content) { //falta generar playlist.js y logica
