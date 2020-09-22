@@ -3,9 +3,9 @@ const Playlist = require('./playlist')
 class PlaylistGenerator {
     generate(idPlaylist, namePlaylist, genresToInclude, maxDuration, artists) {
         let tracks = []
-        Object.keys(this._artists).forEach(artistId => {
-            let artist = this._artists[artistId]
-            let artistTracks =  artist.getTracksMatchingGenres(genresToInclude);
+        Object.keys(artists).forEach(artistId => {
+            let artist = artists[artistId]
+            let artistTracks = artist.getTracksMatchingGenres(genresToInclude);
             tracks = tracks.concat(artistTracks)
         })
         let shuffledTracks = tracks.map((a) => ({sort: Math.random(), value: a}))
