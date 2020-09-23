@@ -5,7 +5,8 @@
 https://app.lucidchart.com/documents/edit/a22c1f6c-1c12-46e0-b84e-17849ed26f9e/0_0#?folder_id=home&browser=icon
 
 
-Comandos validos :
+precarga => bash preg
+Comandos validos : bash precharge.sh
 
 <add>
 
@@ -50,3 +51,17 @@ Ejemplo -> node main.js GetTrack id "1"
 
 node main.js GetPlayList id <id>
 Ejemplo -> node main.js GetPlayList id "1"
+
+<getAll>
+
+node main.js GetArtistAll
+Ejemplo -> node main.js GetArtistAll
+
+node main.js GetAlbumAll
+Ejemplo -> node main.js GetAlbumAll
+
+node main.js GetTrackAll
+Ejemplo -> node main.js GetTrackAll
+
+node main.js GetPlayListAll
+Ejemplo -> node main.js GetPlayListAll

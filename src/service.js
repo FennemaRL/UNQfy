@@ -127,7 +127,7 @@ class Service {
         let albums = []
         Object.keys(this._artists).forEach(artistId => {
             let artist = this._artists[artistId];
-            albums.concat(artist.getAllAlbums())
+            albums = albums.concat(artist.getAllAlbums())
         })
         return albums
     }
@@ -135,7 +135,7 @@ class Service {
         let tracks = []
         Object.keys(this._artists).forEach(artistId => {
             let artist = this._artists[artistId];
-            tracks.concat(artist.getAllTracks())
+            tracks = tracks.concat(artist.getAllTracks())
         })
         return tracks
     }

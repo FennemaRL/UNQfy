@@ -114,22 +114,22 @@ class UNQfy {
 
   getAllArtists() {
     let all_artists = this._service.getAllArtists()
-    all_artists.forEach(artist => console.log(artist))
+    console.log(all_artists)   
     return all_artists
   }
   getAllAlbums() {
     let all_albums = this._service.getAllAlbums()
-    all_albums.forEach(album => console.log(album))
+    console.log(all_albums)
     return all_albums
   }
   getAllTracks() {
     let all_tracks = this._service.getAllTracks()
-    all_tracks.forEach(track => console.log(track))
+    console.log(all_tracks)
     return all_tracks
   }
   getAllPlaylists() {
     let all_playlists = this._service.getAllPlaylists()
-    all_playlists.forEach(playlist => console.log(playlist))
+    console.log(all_playlists)
     return all_playlists
   }
   deleteArtist(id){

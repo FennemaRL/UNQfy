@@ -3,6 +3,12 @@
 const fs = require('fs'); // necesitado para guardar/cargar unqfy
 const unqmod = require('./unqfy'); // importamos el modulo unqfy
 const { throws } = require('assert');
+const Command = require('./commands/command')
+const commadAdd = require('./commands/create/create')
+const commandDelete = require('./commands/delete/delete')
+const commandGetBy = require('./commands/get-by-id/get-by-id')
+const commandGetAll = require('./commands/get-all/get-all')
+
 
 // Retorna una instancia de UNQfy. Si existe filename, recupera la instancia desde el archivo.
 function getUNQfy(filename = 'data.json') {
@@ -46,62 +52,9 @@ function saveUNQfy(unqfy, filename = 'data.json') {
    4. Guardar el estado de UNQfy (saveUNQfy)
 
 */
-class Command {
-  
-  constructor(criteria, fn) {
-    this._criteria = criteria;
-    this._fn = fn ;
-  }
-  canHandle(command){
-    return criteria === command
-  }
-  do(unquify, data){
-    this._fn(unquify,data);
-  }
-  sameCriteria(criteria ){
-    return this._criteria? this._criteria === criteria : true
-  }
-}
-let commands =[]
 
+let commands  =commadAdd.concat(commandGetBy, commandDelete, commandGetAll) 
 
-let commandAddArtist= (unquify, data) => unquify.addArtist(data)
-commands.push(new Command("AddArtist", commandAddArtist))
-
-
-let commandAddTrack= (unquify, data) => unquify.addTrack(data.albumId, data)
-commands.push(new Command("AddTrack", commandAddTrack))
-
-let commandAddAlbum= (unquify, data) => unquify.addAlbum(data.artistId, data)
-commands.push(new Command("AddAlbum", commandAddAlbum))
-
-let commandCreatePlaylist= (unquify, data) => unquify.createPlaylist(data.name, data.genres, data.maxDuration)
-commands.push(new Command("CreatePlaylist", commandCreatePlaylist))
-
-let commandDeleteArtist= (unquify, data) => unquify.deleteArtist(data.id)
-commands.push(new Command("DeleteArtist", commandDeleteArtist))
-
-let commandDeleteAlbum= (unquify, data) => unquify.deleteAlbum(data.id)
-commands.push(new Command("DeleteAlbum", commandDeleteAlbum))
-
-let commandDeleteTrack= (unquify, data) => unquify.deleteTrack(data.id)
-commands.push(new Command("DeleteTrack", commandDeleteTrack))
-
-let commandDeletePlayList= (unquify, data) => unquify.deletePlayList(data.id)
-commands.push(new Command("DeletePlayList", commandDeletePlayList))
-
-
-let commandGetArtist= (unquify, data) => unquify.getArtistById(data.id)
-commands.push(new Command("GetArtist", commandGetArtist))
-
-let commandGetAlbum= (unquify, data) => unquify.getAlbumById(data.id)
-commands.push(new Command("GetAlbum", commandGetAlbum))
-
-let commandGetTrack= (unquify, data) => unquify.getTrackById(data.id)
-commands.push(new Command("GetTrack", commandGetTrack))
-
-let commandGetPlayList= (unquify, data) => unquify.getPlaylistById(data.id)
-commands.push(new Command("GetPlayList", commandGetPlayList))
 
 
 
@@ -112,7 +65,6 @@ commands.push(new Command(undefined, commandErrorParams))
 
 
 function main() {
-
   let [n, n2, commando, ...arg ] = process.argv
   let unqfy = getUNQfy();
   const commandToExec = commands.find(command => command.sameCriteria(commando));
