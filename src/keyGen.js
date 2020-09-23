@@ -1,10 +1,10 @@
 class KeyGen {
 
     constructor(){
-        this._idArtist = 0;
-        this._idAlbum = 0;
-        this._idTrack = 0;
-        this._idPlaylist = 0;
+        this._idArtist = 1;
+        this._idAlbum = 1;
+        this._idTrack = 1;
+        this._idPlaylist = 1;
     }
 
     getKeyArtist(){

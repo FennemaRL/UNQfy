@@ -52,7 +52,7 @@ class Artist {
     }
     getAllTracks() {
         let tracks = []
-        this._albums.forEach(album => tracks.concat(album.tracks()))
+        this._albums.forEach(album => tracks = tracks.concat(album.tracks))
         return tracks
     }
 

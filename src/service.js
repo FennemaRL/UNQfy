@@ -197,10 +197,11 @@ class Service {
         if (!artist_to_delete) {
             throw new Error(`Artist with ID ${artistID} was not found`)
         } else {
-            this._artists.delete(artistID)
+            this._artists[artistID]= null
             let tracks_to_delete = artist_to_delete.getAllTracks()
             Object.keys(this._playlists).forEach(playlistId => {
                 let playlist = this._playlists[playlistId];
+                debugger
                 playlist.deleteTracks(tracks_to_delete)
             })
             //artist_to_delete.getAllAlbums().forEach(album => this.deleteAlbum(album.id))
@@ -243,12 +244,12 @@ class Service {
             })
         }
     }
-    deletePlaylist(playlistID) {
+    deletePlayList(playlistID) {
         let playlist_to_eliminate = this._playlists[playlistID]
         if (!playlist_to_eliminate) {
             throw new Error(`Playlist with ID ${playlistID} was not found`)
         } else {
-            this._playlists.delete(playlistID)
+            this._playlists[playlistID] = null
         }
     }
 }

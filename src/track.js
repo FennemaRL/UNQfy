@@ -12,6 +12,8 @@ class Track {
     get duration(){ return this._duration;}
 
     get genres(){ return this._genres;}
+    
+    get id(){ return this._id;} 
 }
 
 

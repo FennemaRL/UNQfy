@@ -79,6 +79,19 @@ commands.push(new Command("AddAlbum", commandAddAlbum))
 let commandCreatePlaylist= (unquify, data) => unquify.createPlaylist(data.name, data.genres, data.maxDuration)
 commands.push(new Command("CreatePlaylist", commandCreatePlaylist))
 
+let commandDeleteArtist= (unquify, data) => unquify.deleteArtist(data.id)
+commands.push(new Command("DeleteArtist", commandDeleteArtist))
+
+let commandDeleteAlbum= (unquify, data) => unquify.deleteAlbum(data.id)
+commands.push(new Command("DeleteAlbum", commandDeleteAlbum))
+
+let commandDeleteTrack= (unquify, data) => unquify.deleteTrack(data.id)
+commands.push(new Command("DeleteTrack", commandDeleteTrack))
+
+let commandDeletePlayList= (unquify, data) => unquify.deletePlayList(data.id)
+commands.push(new Command("DeletePlayList", commandDeletePlayList))
+
+
 let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
 commands.push(new Command(undefined, commandErrorParams))
 
@@ -95,12 +108,15 @@ function main() {
 
   const data = {commando}
   
-  let argsWithNumbers = arg.map( param => Number.isSafeInteger(param) ? Number(param) : param) 
+  let argsWithNumbers = arg.map( param => Number.isSafeInteger( Number(param)) ? Number(param) : param) 
   argsWithNumbers.forEach((value,indx) => {
-    if(! (indx % 2) ){
+    if(! (indx % 2) && value === "genres"){
+      let list = argsWithNumbers[indx+1].substring(1, argsWithNumbers[indx+1].length - 1).split(",");
+      data[value] = list
+    }
+    else if(! (indx % 2)) {
       data[value] = argsWithNumbers[indx+1]
     }
-
   })
   commandToExec.do(unqfy,data)
   console.log(unqfy)

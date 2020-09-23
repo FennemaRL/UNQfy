@@ -20,8 +20,8 @@ class Album {
         this._tracks.push(track);
     }
     
-    sameKey(albumid) {
-        return this._id === albumid
+    sameKey(albumid) {     
+        return this.id === albumid
     }
 
     searchTrackByName(content) {

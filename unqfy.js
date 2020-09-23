@@ -128,6 +128,18 @@ class UNQfy {
     all_playlists.forEach(playlist => console.log(playlist))
     return all_playlists
   }
+  deleteArtist(id){
+    this._service.deleteArtist(id)
+  }
+  deleteAlbum(id){
+    this._service.deleteAlbum(id)
+  }
+  deleteTrack(id){
+    this._service.deleteTrack(id)
+  }
+  deletePlayList(id){
+    this._service.deletePlayList(id)
+  }
 
 
 
