@@ -37,6 +37,10 @@ node main.js DeletePlayList id <id>
 Ejemplo -> node main.js DeletePlayList id "1"
 
 
+<getParse>
+
+node main.js GetParseMatch id <string>
+Ejemplo -> node main.js GetParseMatch content "Guns"
 
 <getById>
 

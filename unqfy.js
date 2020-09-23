@@ -109,6 +109,7 @@ class UNQfy {
   }
 
   searchByName(content) {
+    console.log(this._service.searchByName(content))
     return this._service.searchByName(content)
   }
 

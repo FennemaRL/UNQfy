@@ -57,6 +57,8 @@ let commands  =commadAdd.concat(commandGetBy, commandDelete, commandGetAll)
 
 
 
+let commandParseMach= (unquify, data) => unquify.searchByName(data.content)
+commands.push(new Command("GetParseMatch", commandParseMach))
 
 let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
 commands.push(new Command(undefined, commandErrorParams))
