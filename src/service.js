@@ -24,7 +24,6 @@ class Service {
     }
     
     addAlbum(artistId, albumData, keyGen) {
-        console.log(this._artists)
         const id = keyGen.getKeyAlbum();
         const newAlbum = new Album(id, artistId, albumData.name, albumData.year);
         const artistFind = this._artists[artistId];
@@ -122,7 +121,6 @@ class Service {
     }
 
     getAllArtists() {
-        //this._artists.forEach(artist => console.log(artist))
         return this._artists
     }
     getAllAlbums() {
@@ -131,7 +129,6 @@ class Service {
             let artist = this._artists[artistId];
             albums.concat(artist.getAllAlbums())
         })
-        //albums.forEach(album => console.log(album))
         return albums
     }
     getAllTracks() {
@@ -140,11 +137,9 @@ class Service {
             let artist = this._artists[artistId];
             tracks.concat(artist.getAllTracks())
         })
-        //tracks.forEach(track => console.log(track))
         return tracks
     }
     getAllPlaylists() {
-        //this._playlists.forEach(playlist => console.log(playlist))
         return this._playlists
     }
 
@@ -165,9 +160,9 @@ class Service {
         })
         if (!album_owner) {
             throw new Error(`Album with ID ${id} was not found`)
-        } else {
-            return album_owner.getAlbumById(id)
-        }
+        } 
+        return album_owner.getAlbumById(id)
+        
     }
     getTrackById(id) {
         let track_owner = undefined
@@ -179,9 +174,9 @@ class Service {
         })
         if (!track_owner) {
             throw new Error(`Track with ID ${id} was not found`)
-        } else {
-            return track_owner.getTrackById(id)
         }
+        return track_owner.getTrackById(id)
+        
     }
     getPlaylistById(id) {
         let playlist_with_id = this._playlists[id]

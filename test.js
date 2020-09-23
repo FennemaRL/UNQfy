@@ -58,7 +58,6 @@ describe('Add, remove and filter data', () => {
     
     const results = unqfy.searchByName('Roses');
     
-    console.log("123")
     assert.deepEqual(results, {
       artists: [artist1],
       albums: [album1],

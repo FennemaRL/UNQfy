@@ -14,7 +14,6 @@ function getUNQfy(filename = 'data.json') {
 }
 
 function saveUNQfy(unqfy, filename = 'data.json') {
-  console.log(filename)
   unqfy.save(filename);
 }
 
@@ -92,6 +91,20 @@ let commandDeletePlayList= (unquify, data) => unquify.deletePlayList(data.id)
 commands.push(new Command("DeletePlayList", commandDeletePlayList))
 
 
+let commandGetArtist= (unquify, data) => unquify.getArtistById(data.id)
+commands.push(new Command("GetArtist", commandGetArtist))
+
+let commandGetAlbum= (unquify, data) => unquify.getAlbumById(data.id)
+commands.push(new Command("GetAlbum", commandGetAlbum))
+
+let commandGetTrack= (unquify, data) => unquify.getTrackById(data.id)
+commands.push(new Command("GetTrack", commandGetTrack))
+
+let commandGetPlayList= (unquify, data) => unquify.getPlaylistById(data.id)
+commands.push(new Command("GetPlayList", commandGetPlayList))
+
+
+
 let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
 commands.push(new Command(undefined, commandErrorParams))
 
@@ -99,11 +112,9 @@ commands.push(new Command(undefined, commandErrorParams))
 
 
 function main() {
-  console.log('arguments: ');
 
   let [n, n2, commando, ...arg ] = process.argv
   let unqfy = getUNQfy();
-  console.log(unqfy)
   const commandToExec = commands.find(command => command.sameCriteria(commando));
 
   const data = {commando}
@@ -119,7 +130,6 @@ function main() {
     }
   })
   commandToExec.do(unqfy,data)
-  console.log(unqfy)
   saveUNQfy(unqfy);
 
   // fata crear comandos y archivo para carga y comando npm

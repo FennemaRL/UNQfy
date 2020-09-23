@@ -60,18 +60,22 @@ class UNQfy {
   }
 
   getArtistById(id) {
+    console.log(this._service.getArtistById(id))   
     return this._service.getArtistById(id)
   }
 
   getAlbumById(id) {
+    console.log(this._service.getAlbumById(id))   
     return this._service.getAlbumById(id)
   }
 
   getTrackById(id) {
+    console.log(this._service.getTrackById(id)) 
     return this._service.getTrackById(id)
   }
 
   getPlaylistById(id) {
+    console.log(this._service.getPlaylistById(id)) 
     return this._service.getPlaylistById(id)
   }
 

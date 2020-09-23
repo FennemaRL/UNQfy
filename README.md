@@ -34,3 +34,19 @@ Ejemplo -> node main.js DeleteTrack id "1"
 
 node main.js DeletePlayList id <id>
 Ejemplo -> node main.js DeletePlayList id "1"
+
+
+
+<getById>
+
+node main.js GetArtist id <id>
+Ejemplo -> node main.js GetArtist id "1"
+
+node main.js GetAlbum id <id>
+Ejemplo -> node main.js GetAlbum id "1"
+
+node main.js GetTrack id <id>
+Ejemplo -> node main.js GetTrack id "1"
+
+node main.js GetPlayList id <id>
+Ejemplo -> node main.js GetPlayList id "1"
