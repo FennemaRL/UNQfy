@@ -38,7 +38,7 @@ Ejemplo -> node main.js DeletePlayList id "1"
 
 <Métodos getParse>
 
-node main.js GetParseMatch id <string>
+node main.js GetParseMatch content <string>
 Ejemplo -> node main.js GetParseMatch content "Guns"
 
 node main.js SearchTracksByArtist artistName <artistName>
@@ -72,5 +72,5 @@ Ejemplo -> node main.js GetAlbumAll
 node main.js GetTrackAll
 Ejemplo -> node main.js GetTrackAll
 
-node main.js GetPlayListAll
+node main.js GetPlayListsAll
 Ejemplo -> node main.js GetPlayListAll
