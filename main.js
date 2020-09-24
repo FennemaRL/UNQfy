@@ -60,6 +60,11 @@ let commands  =commadAdd.concat(commandGetBy, commandDelete, commandGetAll)
 let commandParseMach= (unquify, data) => unquify.searchByName(data.content)
 commands.push(new Command("GetParseMatch", commandParseMach))
 
+let commandSearchTracksByGenres = (unquify, data) => unquify.getTracksMatchingGenres(data.genres)
+commands.push(new Command("SearchTracksByGenres", commandSearchTracksByGenres))
+let commandSearchTracksByArtist = (unquify, data) => unquify.getTracksMatchingArtist(data.artistName)
+commands.push(new Command("SearchTracksByArtist", commandSearchTracksByArtist))
+
 let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
 commands.push(new Command(undefined, commandErrorParams))
 

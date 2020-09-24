@@ -82,15 +82,18 @@ class UNQfy {
   // genres: array de generos(strings)
   // retorna: los tracks que contenga alguno de los generos en el parametro genres
   getTracksMatchingGenres(genres) {
-    return this._service.getTracksMatchingGenres(genres);
+    let track_matching_genres = this._service.getTracksMatchingGenres(genres);
+    console.log(track_matching_genres)
+    return track_matching_genres
 
   }
 
   // artistName: nombre de artista(string)
   // retorna: los tracks interpredatos por el artista con nombre artistName
   getTracksMatchingArtist(artistName) {
-    return this._service.getTracksMatchingArtist(artistName)
-
+    let track_matching_artist = this._service.getTracksMatchingArtist(artistName);
+    console.log(track_matching_artist)
+    return track_matching_artist
   }
 
 
