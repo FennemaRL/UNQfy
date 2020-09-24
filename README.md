@@ -8,7 +8,7 @@ https://app.lucidchart.com/documents/edit/a22c1f6c-1c12-46e0-b84e-17849ed26f9e/0
 precarga => bash preg
 Comandos validos : bash precharge.sh
 
-<add>
+<Métodos add>
 
 node main.js AddArtist name <name> country <country>
 Ejemplo -> node main.js AddArtist name "Guns N Roses" country "England"
@@ -22,7 +22,7 @@ Ejemplo -> node main.js AddTrack albumId 1 name "Guns N Roses song" duration 300
 node main.js CreatePlaylist nombre <albumId> genres <genres> maxDuration <maxDuration>
 Ejemplo -> node main.js CreatePlaylist name "Guns N Roses PlayList"  genres ["rock"] maxDuration 300
 
-<delete>
+<Métodos delete>
 
 node main.js DeleteArtist id <id>
 Ejemplo -> node main.js DeleteArtist id "1"
@@ -36,13 +36,18 @@ Ejemplo -> node main.js DeleteTrack id "1"
 node main.js DeletePlayList id <id>
 Ejemplo -> node main.js DeletePlayList id "1"
 
-
-<getParse>
+<Métodos getParse>
 
 node main.js GetParseMatch id <string>
 Ejemplo -> node main.js GetParseMatch content "Guns"
 
-<getById>
+node main.js SearchTracksByArtist artistName <artistName>
+Ejemplo -> node main.js SearchTracksByArtist artistName "Guns N Roses"
+
+node main.js SearchTracksByGenres genres <genres>
+Ejemplo -> node main.js SearchTracksByGenres genres ["rock"]
+
+<Métodos getById>
 
 node main.js GetArtist id <id>
 Ejemplo -> node main.js GetArtist id "1"
@@ -56,7 +61,7 @@ Ejemplo -> node main.js GetTrack id "1"
 node main.js GetPlayList id <id>
 Ejemplo -> node main.js GetPlayList id "1"
 
-<getAll>
+<Métodos getAll>
 
 node main.js GetArtistAll
 Ejemplo -> node main.js GetArtistAll
