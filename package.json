@@ -13,12 +13,14 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.10.0",
-    "mocha": "^5.0.5"
+    "mocha": "^5.0.5",
+    "nodemon": "^2.0.6"
   },
   "scripts": {
     "test": "mocha",
     "eslint": "eslint *.js",
-    "app": "node app.js"
+    "app": "node app.js",
+    "nodemon": "nodemon ./app.js"
   },
   "author": "",
   "license": "ISC",
