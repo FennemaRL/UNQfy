@@ -16,6 +16,8 @@ function saveUNQfy(unqfy, filename = "data.json") {
   unqfy.save(filename);
 }
 
+app.use("/api");
+
 app.get("/artist/:name", async (req, res) => {
   const unqfyR = getUNQfy();
   const artist_name = req.params.name;
@@ -75,6 +77,41 @@ app.get("/track/:id/lyrics", async (req, res) => {
           .json({ Name: track.name, lyrics: message.body.lyrics.lyrics_body });
       })
       .catch((e) => res.status(400).json({ message: "no se encontro lyrics" }));
+  }
+});
+
+app.post("/artists", (req, res) => {
+  const { name, country } = req.body;
+  const unqfyR = getUNQfy();
+  try {
+    const artist = unqfyR.addArtist({ name, country });
+
+    saveUNQfy(unqfyR);
+    res.status(201).json(artist);
+  } catch (e) {
+    res.status(409).json({ errorCode: "RESOURCE_ALREADY_EXISTS" });
+  }
+});
+app.get("/artists", (req, res) => {
+  const qp = req.query; // TODO
+  const unqfyR = getUNQfy();
+  let artists = unqfyR.getAllArtists();
+  res.status(201).json(artists);
+});
+
+app.post("/albums", (req, res) => {
+  const { artistId, name, year } = req.body;
+  const unqfyR = getUNQfy();
+  try {
+    const album = unqfyR.addAlbum(artistId, { name, year });
+    res.status(201).json(album);
+  } catch (e) {
+    if (e instanceof Duplicated) {
+      res.status(409).json({ errorCode: "RESOURCE_ALREADY_EXISTS" });
+    }
+    if (e instanceof NotFound) {
+      res.status(404).json({ errorCode: "RELATED_RESOURCE_NOT_FOUND" });
+    }
   }
 });
 

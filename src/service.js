@@ -13,7 +13,9 @@ class Service {
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
       if (artist.name === artistData.name) {
-        throw new Error(`Artist with name ${artistData.name} already exists`);
+        throw new Duplicated(
+          `Artist with name ${artistData.name} already exists`
+        );
       }
     });
     const id = keyGen.getKeyArtist();
@@ -27,7 +29,7 @@ class Service {
     const newAlbum = new Album(id, artistId, albumData.name, albumData.year);
     const artistFind = this._artists[artistId];
     if (!artistFind) {
-      throw new Error(`Artist with ID ${artistId} was not found`);
+      throw new NotFound(`Artist with ID ${artistId} was not found`);
     }
     artistFind.addAlbum(newAlbum);
     return newAlbum;
