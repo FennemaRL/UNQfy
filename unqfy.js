@@ -118,6 +118,9 @@ class UNQfy {
   searchArtistByName(content) {
     return this._service.searchArtistByName(content)
   }
+  getAlbumsForArtist(artistName) {
+    return this._service.getAlbumsForArtist(artistName)
+  }
 
   getAllArtists() {
     let all_artists = this._service.getAllArtists()

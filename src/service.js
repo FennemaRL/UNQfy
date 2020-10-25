@@ -137,6 +137,21 @@ class Service {
     });
     return tracks;
   }
+  getAlbumsForArtist(artistName) {
+    let artist_with_name_exists = false;
+    let albums = [];
+    Object.keys(this._artists).forEach((artistId) => {
+      let artist = this._artists[artistId];
+      if (artist.name == artistName) {
+        artist_with_name_exists = true;
+        albums = artist.getAllAlbums()
+      }
+    });
+    if (!artist_with_name_exists) {
+      throw new Error(`Artist with name "${artistName}" was not found`);
+    }
+    return albums;
+  }
 
   getAllArtists() {
     return this._artists;
