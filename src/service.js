@@ -144,7 +144,7 @@ class Service {
       let artist = this._artists[artistId];
       if (artist.name == artistName) {
         artist_with_name_exists = true;
-        albums = artist.getAllAlbums()
+        albums = artist.getAllAlbums();
       }
     });
     if (!artist_with_name_exists) {
@@ -208,6 +208,20 @@ class Service {
       throw new Error(`Track with ID ${id} was not found`);
     }
     return track_owner.getTrackById(id);
+  }
+
+  getTrackByIdAndOwner(id) {
+    let track_owner = undefined;
+    Object.keys(this._artists).forEach((artistId) => {
+      let artist = this._artists[artistId];
+      if (artist.hasTrackWithId(id)) {
+        track_owner = artist;
+      }
+    });
+    if (!track_owner) {
+      throw new Error(`Track with ID ${id} was not found`);
+    }
+    return { artist: track_owner, track: track_owner.getTrackById(id) };
   }
   getPlaylistById(id) {
     let playlist_with_id = this._playlists[id];

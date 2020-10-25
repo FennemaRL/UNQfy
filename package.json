@@ -6,21 +6,24 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "chai": "^4.1.2",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "picklify": "github:lwoites/picklify"
+    "picklify": "github:lwoites/picklify",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.10.0",
-    "mocha": "^5.0.5",
+    "mocha": "^8.2.0",
     "nodemon": "^2.0.6"
   },
   "scripts": {
     "test": "mocha",
     "eslint": "eslint *.js",
-    "app": "node app.js",
-    "nodemon": "nodemon ./app.js"
+    "app": "nodemon ./app.js",
+    "rf": "node generateSpotifyCredentials.js"
   },
   "author": "",
   "license": "ISC",
