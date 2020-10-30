@@ -18,6 +18,13 @@ class Artist {
     return this._country;
   }
 
+  updateArtist (name) {
+    this._name = name
+  }
+  updateCountry (country) {
+    this._country = country
+  }
+
   addAlbum(album) {
     if (this._albums.some((a) => a.name === album.name)) {
       throw new Duplicated(`Album with name ${album.name} already exists`);

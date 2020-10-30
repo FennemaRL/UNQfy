@@ -13,6 +13,10 @@ class Album {
     
     get year(){ return this._year;}
 
+    updateYear(year) {
+        this._year = year
+    }
+
     addTrack(track){
         if (this._tracks.some(album_track => album_track.name === track.name)) {
             throw new Error(`Track with name "${track.name}" already exists in album with name "${this._name}"`)

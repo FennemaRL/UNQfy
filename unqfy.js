@@ -10,6 +10,8 @@ const PlaylistGenerator = require("./src/playlistGenerator");
 
 const rp = require("request-promise");
 const util = require("util");
+const SpotifyService = require("./services/spotifyService");
+const MusixmatchService = require("./services/musixmatchService");
 const readfile = util.promisify(fs.readFile);
 
 class UNQfy {
@@ -20,6 +22,7 @@ class UNQfy {
   constructor() {
     this._service = new Service();
     this._keyGen = new KeyGen();
+    this._musixmatchService = new MusixmatchService();
   }
 
   addArtist(artistData) {
@@ -164,32 +167,8 @@ class UNQfy {
     this._service.deletePlayList(id);
   }
 
-  async populateAlbumsForArtist(artist_name) {
-    const options = await readfile("spotifyCreds.json")
-      .then(JSON.parse)
-      .then((cred) => cred.access_token)
-      .then((token) => ({
-        headers: { Authorization: `Bearer ${token}` },
-        json: true,
-      }));
-    return rp
-      .get(
-        `https://api.spotify.com/v1/search?q=${artist_name}&type=artist&limit=1`,
-        options
-      )
-      .then(({ artists }) =>
-        artists.items[0] ? artists.items[0].id : undefined
-      )
-      .then((artistId) =>
-        rp.get(`https://api.spotify.com/v1/artists/${artistId}/albums`, options)
-      )
-      .then(({ items }) =>
-        Promise.all(
-          items.map((album) =>
-            rp.get(`https://api.spotify.com/v1/albums/${album.id}`, options)
-          )
-        )
-      )
+  populateAlbumsForArtist(artist_name) {
+    SpotifyService.populateAlbumsForArtist(artist_name)
       .then((albums) => {
         const artist = this.searchArtistByName(artist_name)[0];
         albums.forEach((album) => {
@@ -209,6 +188,21 @@ class UNQfy {
       })
       .catch((e) => console.log(`rompio ${e}`));
   }
+
+  getTrackLyrics(track_id) {
+    const { artist, track } = this.getTrackByIdAndOwner(Number(track_id));
+  
+    if (track.lyrics) {
+      return Promise.resolve(track)
+    } else {
+      return this._musixmatchService.getSongLyrics(artist, track)
+        .then(({ message }) => {
+          track.setLyrics(message.body.lyrics.lyrics_body);
+          return track
+        })
+        .catch((e) => {throw new NotFound(`Artist with ID ${track_id} was not found`);});
+    }
+  };
 
   save(filename) {
     const serializedData = picklify.picklify(this);

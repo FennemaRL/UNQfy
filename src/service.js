@@ -2,6 +2,7 @@ const Track = require("./track");
 const Artist = require("./artist");
 const Album = require("./album");
 const PlaylistGenerator = require("./playlistGenerator");
+const Playlist = require("./playlist");
 class Service {
   constructor() {
     this._artists = {};
@@ -292,6 +293,63 @@ class Service {
     } else {
       delete this._playlists[playlistID];
     }
+  }
+
+  updateArtistName(id, name) {
+    Object.keys(this._artists).forEach((artistId) => {
+      let artist = this._artists[artistId];
+      if (artist.name === name) {
+        throw new Duplicated(
+          `Artist with name ${artistData.name} already exists`
+        );
+      }
+    });
+
+    let artist_with_id = this._artists[id];
+    if (!artist_with_id) {
+      throw new NotFound(`Artist with ID ${id} was not found`);
+    }
+    artist_with_id.updateName(name)
+    return artist_with_id
+  }
+
+  updateArtistCountry(id, country) {
+    let artist_with_id = this._artists[id];
+    if (!artist_with_id) {
+      throw new NotFound(`Artist with ID ${id} was not found`);
+    }
+    artist_with_id.updateCountry(country)
+    return artist_with_id
+  }
+
+  updateAlbum(id, year) {
+    let album_with_id = getAlbumById(id);
+    if (!album_with_id) {
+      throw new NotFound(`Album with ID ${id} was not found`);
+    }
+    album_with_id.updateAlbum(year)
+    return album_with_id
+  }
+
+  createPlaylist(name, trackIds) {
+    let playlist_id = keyGen.getKeyPlayList();
+    let tracks = []
+    let genres = []
+    let duration = 0
+    for (trackId in trackIds) {
+      let track_with_id = getTrackById(trackId)
+      if (!track_with_id) {
+        throw new NotFound(`Album with ID ${trackId} was not found`);
+      } else {
+        tracks.push(track_with_id)
+      }
+    }
+    for (track in tracks) {
+      genres.concat(track.genres)
+      duration += track.duration
+    }
+    this._playlists[id] = Playlist(playlist_id, name, genres, duration, tracks)
+    return playlist;
   }
 }
 module.exports = Service;
