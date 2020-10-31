@@ -49,7 +49,7 @@ class Service {
       }
     });
     if (!albumOwner) {
-      throw new Error(`Album with ID ${albumId} was not found`);
+      throw new NotFound(`Album with ID ${albumId} was not found`);
     }
 
     const createdTrack = new Track(
@@ -153,7 +153,7 @@ class Service {
       }
     });
     if (!artist_with_name_exists) {
-      throw new Error(`Artist with name "${artistName}" was not found`);
+      throw new NotFound(`Artist with name "${artistName}" was not found`);
     }
     return albums;
   }
@@ -184,7 +184,7 @@ class Service {
   getArtistById(id) {
     let artist_with_id = this._artists[id];
     if (!artist_with_id) {
-      throw new Error(`Artist with ID ${id} was not found`);
+      throw new NotFound(`Artist with ID ${id} was not found`);
     }
     return artist_with_id;
   }
@@ -197,7 +197,7 @@ class Service {
       }
     });
     if (!album_owner) {
-      throw new Error(`Album with ID ${id} was not found`);
+      throw new NotFound(`Album with ID ${id} was not found`);
     }
     return album_owner.getAlbumById(id);
   }
@@ -210,7 +210,7 @@ class Service {
       }
     });
     if (!track_owner) {
-      throw new Error(`Track with ID ${id} was not found`);
+      throw new NotFound(`Track with ID ${id} was not found`);
     }
     return track_owner.getTrackById(id);
   }
@@ -224,14 +224,14 @@ class Service {
       }
     });
     if (!track_owner) {
-      throw new Error(`Track with ID ${id} was not found`);
+      throw new NotFound(`Track with ID ${id} was not found`);
     }
     return { artist: track_owner, track: track_owner.getTrackById(id) };
   }
   getPlaylistById(id) {
     let playlist_with_id = this._playlists[id];
     if (!playlist_with_id) {
-      throw new Error(`Playlist with ID ${id} was not found`);
+      throw new NotFound(`Playlist with ID ${id} was not found`);
     }
     return playlist_with_id;
   }
@@ -239,7 +239,7 @@ class Service {
   deleteArtist(artistID) {
     let artist_to_delete = this._artists[artistID];
     if (!artist_to_delete) {
-      throw new Error(`Artist with ID ${artistID} was not found`);
+      throw new NotFound(`Artist with ID ${artistID} was not found`);
     } else {
       delete this._artists[artistID];
       let tracks_to_delete = artist_to_delete.getAllTracks();
@@ -260,7 +260,7 @@ class Service {
       }
     });
     if (!album_owner) {
-      throw new Error(`Album with ID ${albumID} was not found`);
+      throw new NotFound(`Album with ID ${albumID} was not found`);
     } else {
       let album_to_delete = album_owner.deleteAlbum(albumID);
       let tracks_to_delete = album_to_delete.tracks;
@@ -279,7 +279,7 @@ class Service {
       }
     });
     if (!track_owner) {
-      throw new Error(`Track with ID ${trackID} was not found`);
+      throw new NotFound(`Track with ID ${trackID} was not found`);
     } else {
       let track_to_delete = track_owner.deleteTrack(trackID);
       Object.keys(this._playlists).forEach((playlistId) => {
@@ -291,7 +291,7 @@ class Service {
   deletePlayList(playlistID) {
     let playlist_to_eliminate = this._playlists[playlistID];
     if (!playlist_to_eliminate) {
-      throw new Error(`Playlist with ID ${playlistID} was not found`);
+      throw new NotFound(`Playlist with ID ${playlistID} was not found`);
     } else {
       delete this._playlists[playlistID];
     }

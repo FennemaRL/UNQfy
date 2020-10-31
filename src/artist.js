@@ -19,6 +19,14 @@ class Artist {
     return this._country;
   }
 
+  set name(name) {
+    this._name = name;
+  }
+
+  set country(country) {
+    this._country = country;
+  }
+
   updateArtist(name) {
     this._name = name;
   }
