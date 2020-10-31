@@ -1,8 +1,11 @@
 const Track = require("./track");
 const Artist = require("./artist");
 const Album = require("./album");
+const Duplicated = require("./duplicated");
 const PlaylistGenerator = require("./playlistGenerator");
 const Playlist = require("./playlist");
+const NotFound = require("./notFound");
+
 class Service {
   constructor() {
     this._artists = {};
@@ -80,7 +83,6 @@ class Service {
       tracks: this.searchTrackByName(content),
       playlists: this.searchPlaylistByName(content),
     };
-    console.log(res);
 
     return res;
   }
@@ -309,8 +311,8 @@ class Service {
     if (!artist_with_id) {
       throw new NotFound(`Artist with ID ${id} was not found`);
     }
-    artist_with_id.updateName(name)
-    return artist_with_id
+    artist_with_id.updateName(name);
+    return artist_with_id;
   }
 
   updateArtistCountry(id, country) {
@@ -318,8 +320,8 @@ class Service {
     if (!artist_with_id) {
       throw new NotFound(`Artist with ID ${id} was not found`);
     }
-    artist_with_id.updateCountry(country)
-    return artist_with_id
+    artist_with_id.updateCountry(country);
+    return artist_with_id;
   }
 
   updateAlbum(id, year) {
@@ -327,28 +329,28 @@ class Service {
     if (!album_with_id) {
       throw new NotFound(`Album with ID ${id} was not found`);
     }
-    album_with_id.updateAlbum(year)
-    return album_with_id
+    album_with_id.updateAlbum(year);
+    return album_with_id;
   }
 
   createPlaylist(name, trackIds) {
     let playlist_id = keyGen.getKeyPlayList();
-    let tracks = []
-    let genres = []
-    let duration = 0
+    let tracks = [];
+    let genres = [];
+    let duration = 0;
     for (trackId in trackIds) {
-      let track_with_id = getTrackById(trackId)
+      let track_with_id = getTrackById(trackId);
       if (!track_with_id) {
         throw new NotFound(`Album with ID ${trackId} was not found`);
       } else {
-        tracks.push(track_with_id)
+        tracks.push(track_with_id);
       }
     }
     for (track in tracks) {
-      genres.concat(track.genres)
-      duration += track.duration
+      genres.concat(track.genres);
+      duration += track.duration;
     }
-    this._playlists[id] = Playlist(playlist_id, name, genres, duration, tracks)
+    this._playlists[id] = Playlist(playlist_id, name, genres, duration, tracks);
     return playlist;
   }
 }

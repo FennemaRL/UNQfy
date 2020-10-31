@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 const unqmod = require("./unqfy");
 const fs = require("fs");
-const rp = require("request-promise");
+const Duplicated = require("./src/duplicated");
+const NotFound = require("./src/notFound");
 
-require("dotenv").config();
 function getUNQfy(filename = "data.json") {
   let unqfy = new unqmod.UNQfy();
   if (fs.existsSync(filename)) {
@@ -19,17 +19,18 @@ function saveUNQfy(unqfy, filename = "data.json") {
 
 //app.use("/api");
 
-app.get("/artist/:name", async (req, res) => {
+app.get("/artists/:name", (req, res) => {
   const unqfyR = getUNQfy();
   const artist_name = req.params.name;
   const artist_with_name = unqfyR.searchArtistByName(artist_name);
 
-  if (artist_with_name) {
-    if (!artist_with_name[0].albums) {
-      await unqfyR.populateAlbumsForArtist(artist_name).then();
-      saveUNQfy(unqfyR);
-    }
+  if (artist_with_name[0]) {
     res.status(200).json({ artist: artist_with_name[0] });
+  } else if (artist_with_name[0].albums) {
+    unqfyR.populateAlbumsForArtist(artist_name).then(() => {
+      saveUNQfy(unqfyR);
+      res.status(200).json({ artist: artist_with_name[0] });
+    });
   } else {
     res
       .status(400)
@@ -40,13 +41,29 @@ app.get("/track/:id/lyrics", async (req, res) => {
   const unqfyR = getUNQfy();
   const track_id = req.params.id;
 
-  unqfyR.getTrackLyrics(track_id)
-    .then(track => {
-      res.status(200).json({name: track.name, lyrics: track.lyrics});
+  unqfyR
+    .getTrackLyrics(track_id)
+    .then((track) => {
+      res.status(200).json({ name: track.name, lyrics: track.lyrics });
     })
-    .catch(e => {
-      res.status(404).json({error: e, errorCode: "RESOURCE_NOT_FOUND" })
+    .catch((e) => {
+      res.status(404).json({ error: e, errorCode: "RESOURCE_NOT_FOUND" });
+    });
+});
+
+app.get("/artists/:name/populate", async (req, res) => {
+  const unqfyR = getUNQfy();
+  const name = req.params.name;
+
+  unqfyR
+    .populateAlbumsForArtist(name)
+    .then((artist) => {
+      saveUNQfy(unqfyR);
+      res.status(201).json({ artist: artist, tomaco: 2 });
     })
+    .catch((e) =>
+      res.status(409).json({ errorCode: "RESOURCE_ALREADY_EXISTS" })
+    );
 });
 
 app.post("/artists", (req, res) => {

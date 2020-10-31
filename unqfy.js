@@ -12,7 +12,6 @@ const rp = require("request-promise");
 const util = require("util");
 const SpotifyService = require("./services/spotifyService");
 const MusixmatchService = require("./services/musixmatchService");
-const readfile = util.promisify(fs.readFile);
 
 class UNQfy {
   // artistData: objeto JS con los datos necesarios para crear un artista
@@ -168,41 +167,47 @@ class UNQfy {
   }
 
   populateAlbumsForArtist(artist_name) {
-    SpotifyService.populateAlbumsForArtist(artist_name)
+    return new SpotifyService()
+      .populateAlbumsForArtist(artist_name)
       .then((albums) => {
         const artist = this.searchArtistByName(artist_name)[0];
+        const map = {};
         albums.forEach((album) => {
-          let genres = album.genres;
+          map[albums.id] = album;
+        });
+        for (let id in map) {
+          let genres = map[id].genres;
           let albumId = this.addAlbum(artist.id, {
-            name: album.name,
-            year: album.release_date.split("-")[0],
+            name: map[id].name,
+            year: map[id].release_date.split("-")[0],
           }).id;
-          album.tracks.items.forEach((t) =>
+          map[id].tracks.items.forEach((t) =>
             this.addTrack(albumId, {
               name: t.name,
               duration: t.duration_ms / 1000,
               genres: genres,
             })
           );
-        });
+        }
+        return artist;
       })
-      .catch((e) => console.log(`rompio ${e}`));
+      .catch();
   }
 
   getTrackLyrics(track_id) {
     const { artist, track } = this.getTrackByIdAndOwner(Number(track_id));
-  
+
     if (track.lyrics) {
-      return Promise.resolve(track)
+      return Promise.resolve(track);
     } else {
-      return this._musixmatchService.getSongLyrics(artist, track)
+      return this._musixmatchService
+        .getSongLyrics(artist, track)
         .then(({ message }) => {
           track.setLyrics(message.body.lyrics.lyrics_body);
-          return track
-        })
-        .catch((e) => {throw new NotFound(`Artist with ID ${track_id} was not found`);});
+          return track;
+        });
     }
-  };
+  }
 
   save(filename) {
     const serializedData = picklify.picklify(this);
@@ -221,6 +226,8 @@ class UNQfy {
       Track,
       KeyGen,
       PlaylistGenerator,
+      SpotifyService,
+      MusixmatchService,
     ];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }

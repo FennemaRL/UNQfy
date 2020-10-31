@@ -3,3 +3,4 @@ class Duplicated extends Error {
     super(message);
   }
 }
+module.exports = Duplicated;

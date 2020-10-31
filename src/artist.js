@@ -1,3 +1,4 @@
+const Duplicated = require("./duplicated");
 class Artist {
   constructor(id, name, country) {
     this._id = id;
@@ -18,11 +19,11 @@ class Artist {
     return this._country;
   }
 
-  updateArtist (name) {
-    this._name = name
+  updateArtist(name) {
+    this._name = name;
   }
-  updateCountry (country) {
-    this._country = country
+  updateCountry(country) {
+    this._country = country;
   }
 
   addAlbum(album) {

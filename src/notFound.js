@@ -3,3 +3,4 @@ class NotFound extends Error {
     super(message);
   }
 }
+module.exports = NotFound;
