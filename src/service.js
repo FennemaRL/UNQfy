@@ -192,6 +192,7 @@ class Service {
     let album_owner = undefined;
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
+      console.log({ id, artistId, artist, bol: artist.hasAlbumWithId(id) });
       if (artist.hasAlbumWithId(id)) {
         album_owner = artist;
       }

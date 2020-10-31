@@ -2,7 +2,6 @@ const express = require("express");
 const unqfy = require("../unqfy");
 const router = express.Router();
 
-const NotFound = require("../src/notFound");
 const { route } = require("./trackRoute");
 function saveUNQfy(unqfy, filename = "data.json") {
   unqfy.save(filename);
@@ -47,10 +46,10 @@ router.get("/:name", (req, res) => {
   const unqfyR = req.unquify;
   const artist_name = req.params.name;
   const artist_with_name = unqfyR.searchArtistByName(artist_name);
-
+  console.log(artist_with_name);
   if (artist_with_name[0]) {
     res.status(200).json({ artist: artist_with_name[0] });
-  } else if (artist_with_name[0].albums) {
+  } else if (artist_with_name[0] && artist_with_name[0].albums) {
     unqfyR.populateAlbumsForArtist(artist_name).then(() => {
       saveUNQfy(unqfyR);
       res.status(200).json({ artist: artist_with_name[0] });
