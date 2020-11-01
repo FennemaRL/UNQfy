@@ -122,6 +122,14 @@ class UNQfy {
     );
   }
 
+  createPlaylist(name, trackIds) {
+    return this._service.createPlaylist(
+      name, 
+      trackIds, 
+      this._keyGen
+    );
+  }
+
   searchByName(content) {
     console.log(this._service.searchByName(content));
     return this._service.searchByName(content);
@@ -207,6 +215,10 @@ class UNQfy {
           return track;
         });
     }
+  }
+
+  searchPlaylistByNameAndDuration(name, durationLT, durationGT) {
+    return this._service.searchPlaylistByNameAndDuration(name, durationLT, durationGT)
   }
 
   save(filename) {

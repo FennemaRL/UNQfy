@@ -334,7 +334,7 @@ class Service {
     return album_with_id;
   }
 
-  createPlaylist(name, trackIds) {
+  createPlaylist(name, trackIds, keyGen) {
     let playlist_id = keyGen.getKeyPlayList();
     let tracks = [];
     let genres = [];
@@ -352,7 +352,59 @@ class Service {
       duration += track.duration;
     }
     this._playlists[id] = Playlist(playlist_id, name, genres, duration, tracks);
-    return playlist;
+    return this._playlists[id];
+  }
+
+  searchPlaylistByNameAndDuration(name, durationLT, durationGT) {
+    const playlists_from_search = []
+    const playlists_from_search_name = []
+    const playlists_from_search_durationLT = []
+    const playlists_from_search_durationGT = []
+
+    if (!name) {
+      playlists_from_search_name = this._playlists
+    } else {
+      Object.keys(this._playlists).forEach((playlistId) => {
+        let playlist = this._playlists[playlistId];
+        playlist.name.includes(name)
+          ? playlists_from_search_name.push(playlist)
+          : undefined;
+      });
+    }
+
+    if (!durationLT) {
+      playlists_from_search_durationLT = this._playlists
+    } else {
+      Object.keys(this._playlists).forEach((playlistId) => {
+        let playlist = this._playlists[playlistId];
+        playlist.duration < durationLT
+          ? playlists_from_search_durationLT.push(playlist)
+          : undefined;
+      });
+    }
+
+    if (!durationGT) {
+      playlists_from_search_durationGT = this._playlists
+    } else {
+      Object.keys(this._playlists).forEach((playlistId) => {
+        let playlist = this._playlists[playlistId];
+        playlist.duration > durationGT
+          ? playlists_from_search_durationGT.push(playlist)
+          : undefined;
+      });
+    }
+
+    Object.keys(this._playlists).forEach((playlistId) => {
+      let playlist = this._playlists[playlistId];
+      (playlists_from_search_name.includes(playlist) && playlists_from_search_durationLT.includes(playlist) && playlists_from_search_durationGT.includes(playlist))
+        ? playlists_from_search.push(playlist)
+        : undefined;
+    });
+
+    if (playlists_from_search.length == 0) {
+      throw new NotFound(`There are no playlists matching the search parameters`);
+    }
+    return playlists_from_search
   }
 }
 module.exports = Service;

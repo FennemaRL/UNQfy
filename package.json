@@ -4,6 +4,7 @@
   "description": "## UML UNQfy",
   "main": "main.js",
   "dependencies": {
+    "body-parse": "^0.1.0",
     "body-parser": "^1.19.0",
     "chai": "^4.1.2",
     "dotenv": "^8.2.0",
