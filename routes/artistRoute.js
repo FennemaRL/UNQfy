@@ -1,8 +1,9 @@
 const express = require("express");
 const unqfy = require("../unqfy");
+const BadRequest = require("../src/badRequest");
+const NotFound = require("../src/notFound");
 const router = express.Router();
 
-const { route } = require("./trackRoute");
 function saveUNQfy(unqfy, filename = "data.json") {
   unqfy.save(filename);
 }
@@ -26,12 +27,22 @@ router.post("", (req, res) => {
   const { name, country } = req.body;
   const unqfyR = req.unquify;
   try {
+    if (!name || !country) {
+      throw new BadRequest("");
+    }
     const artist = unqfyR.addArtist({ name, country });
 
     saveUNQfy(unqfyR);
     res.status(201).json(artist);
   } catch (e) {
-    res.status(409).json({ status: 409, errorCode: "RESOURCE_ALREADY_EXISTS" });
+    if (e instanceof NotFound) {
+      res
+        .status(409)
+        .json({ status: 409, errorCode: "RESOURCE_ALREADY_EXISTS" });
+    }
+    if (e instanceof BadRequest) {
+      res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" });
+    }
   }
 });
 //get all
@@ -43,20 +54,22 @@ router.get("", (req, res) => {
 });
 // get by id
 router.get("/:id", (req, res) => {
-  const unqfyR = req.unquify;
-  const artist_name = Number(req.params.id);
-  const artist_with_name = unqfyR.getArtistById(artist_name);
-  if (artist_with_name) {
-    res.status(200).json({ artist: artist_with_name[0] });
-  } else if (artist_with_name && artist_with_name[0].albums) {
-    unqfyR.populateAlbumsForArtist(artist_name).then(() => {
-      saveUNQfy(unqfyR);
+  try {
+    const unqfyR = req.unquify;
+    const artist_name = Number(req.params.id);
+    const artist_with_name = unqfyR.getArtistById(artist_name);
+
+    if (artist_with_name) {
       res.status(200).json({ artist: artist_with_name[0] });
-    });
-  } else {
-    res
-      .status(400)
-      .json({ message: `no hay Artista con nombre ${artist_name}` });
+    } else if (artist_with_name && artist_with_name[0].albums) {
+      unqfyR.populateAlbumsForArtist(artist_name).then(() => {
+        saveUNQfy(unqfyR);
+        res.status(200).json({ artist: artist_with_name[0] });
+      });
+    }
+  } catch (e) {
+    if (e instanceof NotFound)
+      res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });
 // update
@@ -76,8 +89,7 @@ router.patch("/:id", (req, res) => {
     res.status(200).json(artist);
     saveUNQfy(unqfyR);
   } catch (e) {
-    console.log(e);
-    res.status(404).json({ error: e, errorCode: "RESOURCE_NOT_FOUND" });
+    res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });
 // delete
@@ -89,7 +101,7 @@ router.delete("/:id", (req, res) => {
     saveUNQfy(unqfyR);
     res.status(204).json();
   } catch (e) {
-    res.status(404).json({ error: e, errorCode: "RESOURCE_NOT_FOUND" });
+    res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });
 module.exports = router;
