@@ -31,7 +31,7 @@ router.post("", (req, res) => {
     saveUNQfy(unqfyR);
     res.status(201).json(artist);
   } catch (e) {
-    res.status(409).json({ errorCode: "RESOURCE_ALREADY_EXISTS" });
+    res.status(409).json({ status: 409, errorCode: "RESOURCE_ALREADY_EXISTS" });
   }
 });
 //get all
@@ -39,17 +39,16 @@ router.get("", (req, res) => {
   const qp = req.query; // TODO
   const unqfyR = req.unquify;
   let artists = unqfyR.getAllArtists();
-  res.status(201).json(artists);
+  res.status(200).json(Object.keys(artists).length ? artists : []);
 });
 // get by id
-router.get("/:name", (req, res) => {
+router.get("/:id", (req, res) => {
   const unqfyR = req.unquify;
-  const artist_name = req.params.name;
-  const artist_with_name = unqfyR.searchArtistByName(artist_name);
-  console.log(artist_with_name);
-  if (artist_with_name[0]) {
+  const artist_name = Number(req.params.id);
+  const artist_with_name = unqfyR.getArtistById(artist_name);
+  if (artist_with_name) {
     res.status(200).json({ artist: artist_with_name[0] });
-  } else if (artist_with_name[0] && artist_with_name[0].albums) {
+  } else if (artist_with_name && artist_with_name[0].albums) {
     unqfyR.populateAlbumsForArtist(artist_name).then(() => {
       saveUNQfy(unqfyR);
       res.status(200).json({ artist: artist_with_name[0] });
@@ -87,7 +86,7 @@ router.delete("/:id", (req, res) => {
     const unqfyR = req.unquify;
     const id = req.params.id;
     unqfyR.deleteArtist(id);
-
+    saveUNQfy(unqfyR);
     res.status(204).json();
   } catch (e) {
     res.status(404).json({ error: e, errorCode: "RESOURCE_NOT_FOUND" });

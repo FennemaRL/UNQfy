@@ -8,6 +8,7 @@ const artistRoute = require("./routes/artistRoute");
 const albumRoute = require("./routes/albumRoute");
 const trackRoute = require("./routes/trackRoute");
 
+var router = express.Router();
 const bodyParser = require("body-parser");
 function getUNQfy(filename = "data.json") {
   let unqfy = new unqmod.UNQfy();
@@ -23,11 +24,13 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/artists", artistRoute);
+router.use("/artists", artistRoute);
 
-app.use("/albums", albumRoute);
+router.use("/albums", albumRoute);
 
-app.use("/tracks", trackRoute);
+router.use("/tracks", trackRoute);
+
+app.use("/api", router);
 
 const port = process.env.PORT || 3000;
 app.listen(port);

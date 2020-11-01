@@ -109,5 +109,14 @@ class Artist {
     );
     return track_owner.deleteTrack(trackID);
   }
+
+  toJSON() {
+    return {
+      id: this._id,
+      name: this._name,
+      country: this._country,
+      albums: this._albums,
+    };
+  }
 }
 module.exports = Artist;
