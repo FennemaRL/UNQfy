@@ -123,11 +123,7 @@ class UNQfy {
   }
 
   createPlaylist(name, trackIds) {
-    return this._service.createPlaylist(
-      name, 
-      trackIds, 
-      this._keyGen
-    );
+    return this._service.createPlaylist(name, trackIds, this._keyGen);
   }
 
   searchByName(content) {
@@ -203,22 +199,30 @@ class UNQfy {
   }
 
   getTrackLyrics(track_id) {
-    const { artist, track } = this.getTrackByIdAndOwner(Number(track_id));
+    try {
+      const { artist, track } = this.getTrackByIdAndOwner(Number(track_id));
 
-    if (track.lyrics) {
-      return Promise.resolve(track);
-    } else {
-      return this._musixmatchService
-        .getSongLyrics(artist, track)
-        .then(({ message }) => {
-          track.setLyrics(message.body.lyrics.lyrics_body);
-          return track;
-        });
+      if (track.lyrics) {
+        return Promise.resolve(track);
+      } else {
+        return this._musixmatchService
+          .getSongLyrics(artist, track)
+          .then(({ message }) => {
+            track.setLyrics(message.body.lyrics.lyrics_body);
+            return track;
+          });
+      }
+    } catch (e) {
+      return Promise.reject(e);
     }
   }
 
   searchPlaylistByNameAndDuration(name, durationLT, durationGT) {
-    return this._service.searchPlaylistByNameAndDuration(name, durationLT, durationGT)
+    return this._service.searchPlaylistByNameAndDuration(
+      name,
+      durationLT,
+      durationGT
+    );
   }
 
   save(filename) {

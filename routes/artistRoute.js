@@ -2,6 +2,7 @@ const express = require("express");
 const unqfy = require("../unqfy");
 const BadRequest = require("../src/badRequest");
 const NotFound = require("../src/notFound");
+const Duplicated = require("../src/duplicated");
 const router = express.Router();
 
 function saveUNQfy(unqfy, filename = "data.json") {
@@ -36,6 +37,9 @@ router.post("", (req, res) => {
     res.status(201).json(artist);
   } catch (e) {
     if (e instanceof NotFound) {
+      res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
+    }
+    if (e instanceof Duplicated) {
       res
         .status(409)
         .json({ status: 409, errorCode: "RESOURCE_ALREADY_EXISTS" });
