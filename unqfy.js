@@ -178,8 +178,9 @@ class UNQfy {
         const artist = this.searchArtistByName(artist_name)[0];
         const map = {};
         albums.forEach((album) => {
-          map[albums.id] = album;
+          map[album.name] = album;
         });
+        console.log(Object.keys(map).length);
         for (let id in map) {
           let genres = map[id].genres;
           let albumId = this.addAlbum(artist.id, {
@@ -195,8 +196,7 @@ class UNQfy {
           );
         }
         return artist;
-      })
-      .catch();
+      });
   }
 
   getTrackLyrics(track_id) {

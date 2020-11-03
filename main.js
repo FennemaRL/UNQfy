@@ -1,17 +1,14 @@
-
-
-const fs = require('fs'); // necesitado para guardar/cargar unqfy
-const unqmod = require('./unqfy'); // importamos el modulo unqfy
-const { throws } = require('assert');
-const Command = require('./commands/command')
-const commadAdd = require('./commands/create/create')
-const commandDelete = require('./commands/delete/delete')
-const commandGetBy = require('./commands/get-by-id/get-by-id')
-const commandGetAll = require('./commands/get-all/get-all')
-
+const fs = require("fs"); // necesitado para guardar/cargar unqfy
+const unqmod = require("./unqfy"); // importamos el modulo unqfy
+const { throws } = require("assert");
+const Command = require("./commands/command");
+const commadAdd = require("./commands/create/create");
+const commandDelete = require("./commands/delete/delete");
+const commandGetBy = require("./commands/get-by-id/get-by-id");
+const commandGetAll = require("./commands/get-all/get-all");
 
 // Retorna una instancia de UNQfy. Si existe filename, recupera la instancia desde el archivo.
-function getUNQfy(filename = 'data.json') {
+function getUNQfy(filename = "data.json") {
   let unqfy = new unqmod.UNQfy();
   if (fs.existsSync(filename)) {
     unqfy = unqmod.UNQfy.load(filename);
@@ -19,7 +16,7 @@ function getUNQfy(filename = 'data.json') {
   return unqfy;
 }
 
-function saveUNQfy(unqfy, filename = 'data.json') {
+function saveUNQfy(unqfy, filename = "data.json") {
   unqfy.save(filename);
 }
 
@@ -53,49 +50,61 @@ function saveUNQfy(unqfy, filename = 'data.json') {
 
 */
 
-let commands  =commadAdd.concat(commandGetBy, commandDelete, commandGetAll) 
+let commands = commadAdd.concat(commandGetBy, commandDelete, commandGetAll);
 
+let commandParseMach = (unquify, data) => unquify.searchByName(data.content);
+commands.push(new Command("GetParseMatch", commandParseMach));
 
+let commandSearchTracksByGenres = (unquify, data) =>
+  unquify.getTracksMatchingGenres(data.genres);
+commands.push(new Command("SearchTracksByGenres", commandSearchTracksByGenres));
+let commandSearchTracksByArtist = (unquify, data) =>
+  unquify.getTracksMatchingArtist(data.artistName);
+commands.push(new Command("SearchTracksByArtist", commandSearchTracksByArtist));
+let commandPopulateAlbumsForArtist = (unquify, data) =>
+  unquify.populateAlbumsForArtist(data.artistName);
+commands.push(
+  new Command("PopulateAlbumsForArtist", commandPopulateAlbumsForArtist)
+);
 
-let commandParseMach= (unquify, data) => unquify.searchByName(data.content)
-commands.push(new Command("GetParseMatch", commandParseMach))
-
-let commandSearchTracksByGenres = (unquify, data) => unquify.getTracksMatchingGenres(data.genres)
-commands.push(new Command("SearchTracksByGenres", commandSearchTracksByGenres))
-let commandSearchTracksByArtist = (unquify, data) => unquify.getTracksMatchingArtist(data.artistName)
-commands.push(new Command("SearchTracksByArtist", commandSearchTracksByArtist))
-let commandPopulateAlbumsForArtist = (unquify, data) => unquify.populateAlbumsForArtist(data.artistName)
-commands.push(new Command("PopulateAlbumsForArtist",commandPopulateAlbumsForArtist))
-
-let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
-commands.push(new Command(undefined, commandErrorParams))
-
-
-
+let commandErrorParams = (unquify, data) => {
+  throw new Error(`el comando ->"${data.commando}"<- no existe`);
+};
+commands.push(new Command(undefined, commandErrorParams));
 
 function main() {
-  let [n, n2, commando, ...arg ] = process.argv
+  let [n, n2, commando, ...arg] = process.argv;
   let unqfy = getUNQfy();
-  const commandToExec = commands.find(command => command.sameCriteria(commando));
+  const commandToExec = commands.find((command) =>
+    command.sameCriteria(commando)
+  );
 
-  const data = {commando}
-  
-  let argsWithNumbers = arg.map( param => Number.isSafeInteger( Number(param)) ? Number(param) : param) 
-  argsWithNumbers.forEach((value,indx) => {
-    if(! (indx % 2) && value === "genres"){
-      let list = argsWithNumbers[indx+1].substring(1, argsWithNumbers[indx+1].length - 1).split(",");
-      data[value] = list
+  const data = { commando };
+
+  let argsWithNumbers = arg.map((param) =>
+    Number.isSafeInteger(Number(param)) ? Number(param) : param
+  );
+  argsWithNumbers.forEach((value, indx) => {
+    if (!(indx % 2) && value === "genres") {
+      let list = argsWithNumbers[indx + 1]
+        .substring(1, argsWithNumbers[indx + 1].length - 1)
+        .split(",");
+      data[value] = list;
+    } else if (!(indx % 2)) {
+      data[value] = argsWithNumbers[indx + 1];
     }
-    else if(! (indx % 2)) {
-      data[value] = argsWithNumbers[indx+1]
-    }
-  })
-  let resultOfCommand = commandToExec.do(unqfy,data)
-  
+  });
+  let resultOfCommand = commandToExec.do(unqfy, data);
+
   if (commando !== "PopulateAlbumsForArtist") {
     saveUNQfy(unqfy);
   } else {
-    resultOfCommand.then(() => saveUNQfy(unqfy));
+    resultOfCommand
+      .then((artist) => {
+        console.log(artist);
+        saveUNQfy(unqfy);
+      })
+      .catch((e) => console.log(e));
   }
 
   // fata crear comandos y archivo para carga y comando npm
