@@ -123,7 +123,7 @@ class UNQfy {
     );
   }
 
-  createPlaylist(name, trackIds) {
+  createPlaylistWithIDs(name, trackIds) {
     return this._service.createPlaylist(name, trackIds, this._keyGen);
   }
 

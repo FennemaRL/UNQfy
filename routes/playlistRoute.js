@@ -38,7 +38,7 @@ router.post("", (req, res) => {
         if (!name || !tracks ) {
             throw new BadRequest("");
         }
-        const playlist = unqfyR.createPlaylist(name, tracks);
+        const playlist = unqfyR.createPlaylistByIDs(name, tracks);
         saveUNQfy(unqfyR);
         res.status(201).json(playlist);
     } catch (e) {
