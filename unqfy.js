@@ -137,8 +137,8 @@ class UNQfy {
     return this._service.getAlbumsForArtist(artistName);
   }
 
-  getAllArtists() {
-    let all_artists = this._service.getAllArtists();
+  getAllArtists(name = "") {
+    let all_artists = this._service.getAllArtists(name);
     console.log(all_artists);
     return all_artists;
   }

@@ -158,8 +158,15 @@ class Service {
     return albums;
   }
 
-  getAllArtists() {
-    return this._artists;
+  getAllArtists(name) {
+    let artists = [];
+    Object.keys(this._artists).forEach((artistId) => {
+      let artist = this._artists[artistId];
+      if (artist.name.toLocaleLowerCase().includes(name.toLocaleLowerCase())) {
+        artists.push(artist)
+      }
+    });
+    return artists;
   }
   getAllAlbums() {
     let albums = [];

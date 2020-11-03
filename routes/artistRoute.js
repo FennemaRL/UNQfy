@@ -51,7 +51,7 @@ router.post("", (req, res) => {
 });
 //get all
 router.get("", (req, res) => {
-  const qp = req.query; // TODO
+  const qp = req.query.q ? req.query.q.replace("name=","") : ""; // TODO
   const unqfyR = req.unquify;
   let artists = unqfyR.getAllArtists();
   res.status(200).json(Object.keys(artists).length ? artists : []);
@@ -64,11 +64,11 @@ router.get("/:id", (req, res) => {
     const artist_with_name = unqfyR.getArtistById(artist_name);
 
     if (artist_with_name) {
-      res.status(200).json({ artist: artist_with_name[0] });
-    } else if (artist_with_name && artist_with_name[0].albums) {
+      res.status(200).json( artist_with_name );
+    } else if (artist_with_name && artist_with_name.albums) {
       unqfyR.populateAlbumsForArtist(artist_name).then(() => {
         saveUNQfy(unqfyR);
-        res.status(200).json({ artist: artist_with_name[0] });
+        res.status(200).json( artist_with_name );
       });
     }
   } catch (e) {
@@ -77,10 +77,9 @@ router.get("/:id", (req, res) => {
   }
 });
 // update
-router.patch("/:id", (req, res) => {
-  const id = req.params.id;
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
   const { name, country } = req.body;
-  console.log(name);
   const unqfyR = req.unquify;
   try {
     const artist = unqfyR.getArtistById(id);
@@ -93,6 +92,7 @@ router.patch("/:id", (req, res) => {
     res.status(200).json(artist);
     saveUNQfy(unqfyR);
   } catch (e) {
+    console.log(e)
     res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });
