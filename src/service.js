@@ -163,17 +163,20 @@ class Service {
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
       if (artist.name.toLocaleLowerCase().includes(name.toLocaleLowerCase())) {
-        artists.push(artist)
+        artists.push(artist);
       }
     });
     return artists;
   }
-  getAllAlbums() {
+  getAllAlbums(name) {
     let albums = [];
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
       albums = albums.concat(artist.getAllAlbums());
     });
+    albums = albums.filter((album) =>
+      album.name.toLocaleLowerCase().includes(name.toLocaleLowerCase())
+    );
     return albums;
   }
   getAllTracks() {
@@ -197,9 +200,9 @@ class Service {
   }
   getAlbumById(id) {
     let album_owner = undefined;
+
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
-      console.log({ id, artistId, artist, bol: artist.hasAlbumWithId(id) });
       if (artist.hasAlbumWithId(id)) {
         album_owner = artist;
       }
@@ -363,13 +366,13 @@ class Service {
   }
 
   searchPlaylistByNameAndDuration(name, durationLT, durationGT) {
-    const playlists_from_search = []
-    const playlists_from_search_name = []
-    const playlists_from_search_durationLT = []
-    const playlists_from_search_durationGT = []
+    const playlists_from_search = [];
+    const playlists_from_search_name = [];
+    const playlists_from_search_durationLT = [];
+    const playlists_from_search_durationGT = [];
 
     if (!name) {
-      playlists_from_search_name = this._playlists
+      playlists_from_search_name = this._playlists;
     } else {
       Object.keys(this._playlists).forEach((playlistId) => {
         let playlist = this._playlists[playlistId];
@@ -380,7 +383,7 @@ class Service {
     }
 
     if (!durationLT) {
-      playlists_from_search_durationLT = this._playlists
+      playlists_from_search_durationLT = this._playlists;
     } else {
       Object.keys(this._playlists).forEach((playlistId) => {
         let playlist = this._playlists[playlistId];
@@ -391,7 +394,7 @@ class Service {
     }
 
     if (!durationGT) {
-      playlists_from_search_durationGT = this._playlists
+      playlists_from_search_durationGT = this._playlists;
     } else {
       Object.keys(this._playlists).forEach((playlistId) => {
         let playlist = this._playlists[playlistId];
@@ -403,15 +406,19 @@ class Service {
 
     Object.keys(this._playlists).forEach((playlistId) => {
       let playlist = this._playlists[playlistId];
-      (playlists_from_search_name.includes(playlist) && playlists_from_search_durationLT.includes(playlist) && playlists_from_search_durationGT.includes(playlist))
+      playlists_from_search_name.includes(playlist) &&
+      playlists_from_search_durationLT.includes(playlist) &&
+      playlists_from_search_durationGT.includes(playlist)
         ? playlists_from_search.push(playlist)
         : undefined;
     });
 
     if (playlists_from_search.length == 0) {
-      throw new NotFound(`There are no playlists matching the search parameters`);
+      throw new NotFound(
+        `There are no playlists matching the search parameters`
+      );
     }
-    return playlists_from_search
+    return playlists_from_search;
   }
 }
 module.exports = Service;

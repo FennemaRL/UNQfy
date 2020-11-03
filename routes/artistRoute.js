@@ -51,9 +51,9 @@ router.post("", (req, res) => {
 });
 //get all
 router.get("", (req, res) => {
-  const qp = req.query.q ? req.query.q.replace("name=","") : ""; // TODO
+  const qp = req.query.name; // TODO
   const unqfyR = req.unquify;
-  let artists = unqfyR.getAllArtists();
+  let artists = unqfyR.getAllArtists(qp);
   res.status(200).json(Object.keys(artists).length ? artists : []);
 });
 // get by id
@@ -64,11 +64,11 @@ router.get("/:id", (req, res) => {
     const artist_with_name = unqfyR.getArtistById(artist_name);
 
     if (artist_with_name) {
-      res.status(200).json( artist_with_name );
+      res.status(200).json(artist_with_name);
     } else if (artist_with_name && artist_with_name.albums) {
       unqfyR.populateAlbumsForArtist(artist_name).then(() => {
         saveUNQfy(unqfyR);
-        res.status(200).json( artist_with_name );
+        res.status(200).json(artist_with_name);
       });
     }
   } catch (e) {
@@ -92,7 +92,6 @@ router.put("/:id", (req, res) => {
     res.status(200).json(artist);
     saveUNQfy(unqfyR);
   } catch (e) {
-    console.log(e)
     res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });

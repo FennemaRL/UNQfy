@@ -68,6 +68,7 @@ class UNQfy {
 
   getAlbumById(id) {
     console.log(this._service.getAlbumById(id));
+    console.log();
     return this._service.getAlbumById(id);
   }
 
@@ -142,8 +143,8 @@ class UNQfy {
     console.log(all_artists);
     return all_artists;
   }
-  getAllAlbums() {
-    let all_albums = this._service.getAllAlbums();
+  getAllAlbums(name = "") {
+    let all_albums = this._service.getAllAlbums(name);
     console.log(all_albums);
     return all_albums;
   }
