@@ -107,4 +107,15 @@ router.delete("/:id", (req, res) => {
     res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });
+// get by name
+router.get("/search/:name", (req, res) => {
+  const unqfyR = req.unquify;
+  const artistName = req.params.name;
+  const artist = unqfyR.searchArtistByName(artistName);
+
+  if(!artist.length){
+    res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
+  }
+  res.status(200).json({artist: artist[0]})
+})
 module.exports = router;
