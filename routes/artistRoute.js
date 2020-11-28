@@ -17,7 +17,7 @@ router.get("/:name/populate", async (req, res) => {
     .populateAlbumsForArtist(name)
     .then((artist) => {
       saveUNQfy(unqfyR);
-      res.status(201).json({ artist: artist, tomaco: 2 });
+      res.status(201).json({  artist });
     })
     .catch((e) =>
       res.status(409).json({ errorCode: "RESOURCE_ALREADY_EXISTS" })

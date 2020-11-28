@@ -24,6 +24,7 @@
     "test": "mocha",
     "eslint": "eslint *.js",
     "app": "nodemon ./app.js",
+    "news": "nodemon ./newsletter.js",
     "rf": "node generateSpotifyCredentials.js"
   },
   "author": "",

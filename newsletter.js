@@ -13,9 +13,13 @@ function getSuscriptions(filename = 'dataNS.json') {
     return read(filename)
       .then(
         JSON.parse
-      );
+      ).then(subs => {
+        console.log(subs)
+        res = {}
+        Object.keys(subs).forEach(k=>res[k]= new Set(subs[k]))
+        return res;
+      }).catch(err =>({}));
   } else {
-    console.log(filename)
     return write(filename, "")
       .then(
         res => ({})
@@ -24,22 +28,23 @@ function getSuscriptions(filename = 'dataNS.json') {
 }
 
 function saveSuscriptions(suscriptions,filename = 'dataNS.json') {
-  write(filename, JSON.stringify(suscriptions))
+  res = {}
+  Object.keys(suscriptions).forEach(k=>res[k]= [...(suscriptions[k])])
+
+  return write(filename, JSON.stringify(res))
 }
 
 //routes
 var router = express.Router();
 const bodyParser = require("body-parser");
-const { response } = require("express");
 
 app.use(bodyParser.json());
 
-router.post("/suscribe", async (req, res) => {
+router.post("/subscribe", async (req, res) => {
   let {mail, artistName} = req.body
 
   rp.get({uri: `${process.env.UNQFY}/artists/search/${artistName}`, qs: {}, json: true})
     .then(response => {
-      console.log(response)
       if (!response) {
         throw new Error("bad request")
       }
@@ -47,16 +52,17 @@ router.post("/suscribe", async (req, res) => {
       return getSuscriptions()
     })
     .then(suscriptions => {
-      if (!suscriptions[artistName]) {
-        suscriptions[artistName] = []
+      if (!suscriptions[artistName] || !suscriptions[artistName].size ) {
+        suscriptions[artistName] = new Set()
       }
-      suscriptions[artistName].push(mail)
+      console.log(suscriptions[artistName] )
+      suscriptions[artistName].add(mail)
 
       return suscriptions
     })
     .then(suscriptions => saveSuscriptions(suscriptions))
-    .then(result => {
-      res.status(201).json({ status: 201, message: `${mail} suscripted to ${artistName}` })
+    .then(() => {
+      res.status(201).json({ status: 201, message: `${mail} se subscribio al Artista ${artistName}` })
     })
     .catch(err => {
       console.log(err)
@@ -64,11 +70,23 @@ router.post("/suscribe", async (req, res) => {
     })
 });
 
-router.post("/unsuscribe", (req, res) => {
+router.delete("/unsubscribe", (req, res) => {
   let {mail, artistName} = req.body
+  getSuscriptions()
+  .then(subs=>{
+    if(subs[artistName]){
+      subs[artistName].delete(mail)
+    } 
+      return subs    
+  })
+  .then(suscriptions => saveSuscriptions(suscriptions))
+  .then(()=> 
+  res.status(204).json({ status: 200, message: `${mail} se subscribio al Artista ${artistName}` }))
+  .catch(err=>  {
 
-  console.log(mail, artistName)
-  res.status(201).json({ status: 201, message: "desuscripto" })
+    console.log(err)
+    res.status(404).json({ status: 404, message: err })
+  });
 });
 
 router.use("/notify_new_album", (req, res) => {});

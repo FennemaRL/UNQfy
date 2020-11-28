@@ -33,6 +33,7 @@ router.get("/:id/lyrics", async (req, res) => {
   unqfyR
     .getTrackLyrics(track_id)
     .then((track) => {
+      saveUNQfy(unqfyR);
       res.status(200).json({ name: track.name, lyrics: track.lyrics });
     })
     .catch((e) => {
