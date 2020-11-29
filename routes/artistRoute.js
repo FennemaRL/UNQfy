@@ -29,10 +29,13 @@ router.post("", (req, res) => {
   const unqfyR = req.unquify;
   try {
     if (!name || !country) {
+
+      
       throw new BadRequest("");
+
     }
     const artist = unqfyR.addArtist({ name, country });
-
+    artist.subscribe(req.wt);
     saveUNQfy(unqfyR);
     res.status(201).json(artist);
   } catch (e) {
@@ -46,6 +49,10 @@ router.post("", (req, res) => {
     }
     if (e instanceof BadRequest) {
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" });
+    }
+    else {
+      console.log(e)
+      res.status(400).json({ status: 500, e});
     }
   }
 });

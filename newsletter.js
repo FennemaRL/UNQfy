@@ -37,12 +37,24 @@ function saveSuscriptions(suscriptions,filename = 'dataNS.json') {
 //routes
 var router = express.Router();
 const bodyParser = require("body-parser");
+const BadRequest = require("./src/badRequest");
 
 app.use(bodyParser.json());
 
-router.post("/subscribe", async (req, res) => {
-  let {mail, artistName} = req.body
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    console.error(err);
+    return res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" }); // Bad request
+  }
+  next();
+});
 
+router.post("/subscribe", async (req, res) => {
+
+  let {mail, artistName} = req.body
+  if(!mail || ! artistName) {
+    throw new BadRequest();
+  }
   rp.get({uri: `${process.env.UNQFY}/artists/search/${artistName}`, qs: {}, json: true})
     .then(response => {
       if (!response) {
@@ -65,10 +77,24 @@ router.post("/subscribe", async (req, res) => {
       res.status(201).json({ status: 201, message: `${mail} se subscribio al Artista ${artistName}` })
     })
     .catch(err => {
-      console.log(err)
-      res.status(400).json({error : err})
+      if(err instanceof BadRequest){
+        res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
+      }else{
+        console.log(err);
+        res.status(500).json({error : err})
+      }
+      
     })
 });
+
+router.post("/notify_new_album", async (req, res) => {
+  /**
+   * @TODO conección con gmail?
+   */
+
+
+  res.status(204).message()
+})
 
 router.delete("/unsubscribe", (req, res) => {
   let {mail, artistName} = req.body
@@ -89,7 +115,10 @@ router.delete("/unsubscribe", (req, res) => {
   });
 });
 
-router.use("/notify_new_album", (req, res) => {});
+router.use("/notify_new_album", (req, res) => {
+  const {artist} = req.body;
+  res.status(204)
+});
 
 app.use("/api", router);
 app.use(function (req, res) {
@@ -97,5 +126,5 @@ app.use(function (req, res) {
 });
 
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3001;
 app.listen(port);

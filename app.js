@@ -6,9 +6,11 @@ const artistRoute = require("./routes/artistRoute");
 const albumRoute = require("./routes/albumRoute");
 const trackRoute = require("./routes/trackRoute");
 const playlistRoute = require("./routes/playlistRoute");
-
+const {Observer, event} = require("./src/observer")
+const rp = require("request-promise");
 var router = express.Router();
 const bodyParser = require("body-parser");
+const { RSA_PKCS1_OAEP_PADDING } = require("constants");
 function getUNQfy(filename = "data.json") {
   let unqfy = new unqmod.UNQfy();
   if (fs.existsSync(filename)) {
@@ -19,10 +21,20 @@ function getUNQfy(filename = "data.json") {
 
 app.use(bodyParser.json());
 
-app.use(function (req, res, next) {
+
+router.use(function (req, res, next) {
   req.unquify = getUNQfy();
-  next();
-});
+  req.wt = new Observer()
+  next()
+})
+event.on('addArtist', (artist) =>{
+  var options = {
+    uri: `${process.env.NEWS}/notify_new_album`,
+    body: {artist},
+    json: true,
+  };
+  rp.post(options).then(res => console.log(res)).catch(console.log)
+})
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {

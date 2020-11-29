@@ -22,6 +22,7 @@ router.post("", (req, res) => {
     saveUNQfy(unqfyR);
     res.status(201).json(album);
   } catch (e) {
+    console.log(e)
     if (e instanceof BadRequest) {
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" });
     }
