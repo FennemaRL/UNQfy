@@ -14,7 +14,6 @@ function getSuscriptions(filename = 'dataNS.json') {
       .then(
         JSON.parse
       ).then(subs => {
-        console.log(subs)
         res = {}
         Object.keys(subs).forEach(k=>res[k]= new Set(subs[k]))
         return res;
@@ -67,7 +66,6 @@ router.post("/subscribe", async (req, res) => {
       if (!suscriptions[artistName] || !suscriptions[artistName].size ) {
         suscriptions[artistName] = new Set()
       }
-      console.log(suscriptions[artistName] )
       suscriptions[artistName].add(mail)
 
       return suscriptions
@@ -80,7 +78,6 @@ router.post("/subscribe", async (req, res) => {
       if(err instanceof BadRequest){
         res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
       }else{
-        console.log(err);
         res.status(500).json({error : err})
       }
       
@@ -109,8 +106,6 @@ router.delete("/unsubscribe", (req, res) => {
   .then(()=> 
   res.status(204).json({ status: 200, message: `${mail} se subscribio al Artista ${artistName}` }))
   .catch(err=>  {
-
-    console.log(err)
     res.status(404).json({ status: 404, message: err })
   });
 });
