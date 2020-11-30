@@ -29,9 +29,10 @@ router.use(function (req, res, next) {
   next()
 })
 event.on('addArtist', (artist) =>{
+  console.log(artist, "llega al evento para agregar album")
   var options = {
     uri: `${process.env.NEWS}/notify_new_album`,
-    body: {artist},
+    body: {artistId: artist.id, subject: `Nuevo Album para artista ${artist.name}`, message: `Se ha agregado el album ${artist.getAllAlbums()[artist.getAllAlbums().length-1].name} al artista ${artist.name}`, artistName: artist.name},
     json: true,
   };
   rp.post(options).then(res => console.log(res)).catch(console.log)

@@ -6,6 +6,7 @@ class Observer {
     constructor() {
     }
     notify(subj){
+        console.log("llega al observer")
         event.emit('addArtist',subj)
     }
 }

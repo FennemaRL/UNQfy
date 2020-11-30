@@ -9,6 +9,7 @@
     "chai": "^4.1.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "googleapis": "^65.0.0",
     "picklify": "github:lwoites/picklify",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"

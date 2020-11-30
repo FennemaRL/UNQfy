@@ -6,6 +6,9 @@ const util = require("util");
 require('dotenv').config()
 const read = util.promisify(fs.readFile)
 const write = util.promisify(fs.writeFile)
+const GMailAPIClient = require('./src/GMailAPIClient');
+
+const gmailClient = new GMailAPIClient();
 
 //utils
 function getSuscriptions(filename = 'dataNS.json') {
@@ -48,7 +51,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-router.post("/subscribe", async (req, res) => {
+router.post("/subscribe", async (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
 
   let {mail, artistName} = req.body
   if(!mail || ! artistName) {
@@ -84,16 +87,42 @@ router.post("/subscribe", async (req, res) => {
     })
 });
 
-router.post("/notify_new_album", async (req, res) => {
-  /**
-   * @TODO conección con gmail?
-   */
+router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
+  const { artistId, subject, message, artistName } = req.body
 
+  console.log(req.body, "estamos en req.body de notify")
 
-  res.status(204).message()
+  getSuscriptions()
+  .then(suscriptions => suscriptions[artistName])
+  .then(setSuscriptors => [...setSuscriptors])
+  .then(apiSuscriptors => {
+    return Promise.all(apiSuscriptors.map(suscriptor => {
+      gmailClient.send_mail(
+        subject,
+        [
+          message
+        ],
+        {
+          "email": suscriptor
+        },
+        {
+          "name": process.env.NEWSLETTER_NAME,
+          "email": process.env.NEWSLETTER_MAIL
+        }
+      )
+    }))
+  })
+  .then(result => {
+    console.log(result, "estamos en result feliz de notify")
+    res.status(204).json()
+  }) /** @TODO hablar 204 por body vacio */
+  .catch(err => {
+    console.log(err, "estamos en error de notify")
+    res.status(404).json({"error":"No anduvo"})
+  })
 })
 
-router.delete("/unsubscribe", (req, res) => {
+router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
   let {mail, artistName} = req.body
   getSuscriptions()
   .then(subs=>{
@@ -110,10 +139,9 @@ router.delete("/unsubscribe", (req, res) => {
   });
 });
 
-router.use("/notify_new_album", (req, res) => {
-  const {artist} = req.body;
-  res.status(204)
-});
+/** @TODO falta traernos todas las suscripciones de un artist */
+
+/** @TODO falta eliminación de artist y suscripciones */
 
 app.use("/api", router);
 app.use(function (req, res) {

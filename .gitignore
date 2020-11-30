@@ -3,5 +3,7 @@ vscode/
 package-lock.json
 data.json
 dataNS.json
+credentials.json
+token.json
 
 .env
