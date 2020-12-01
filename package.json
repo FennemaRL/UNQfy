@@ -24,8 +24,8 @@
   "scripts": {
     "test": "mocha",
     "eslint": "eslint *.js",
-    "app": "nodemon ./app.js",
-    "news": "nodemon ./newsletter.js",
+    "app": "nodemon ./UNQFY-API/app.js",
+    "news": "nodemon ./Newsletter-API/newsletter.js",
     "rf": "node generateSpotifyCredentials.js"
   },
   "author": "",

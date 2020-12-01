@@ -5,15 +5,14 @@ const KeyGen = require("./src/keyGen");
 const Artist = require("./src/artist");
 const Playlist = require("./src/playlist");
 const Album = require("./src/album");
-const {Observer,event} = require("./src/observer");
-const Subject = require("./src/subject");
+const Observer = require("./src/observer");
+const {Subject} = require("./src/subject");
 const Track = require("./src/track");
 const PlaylistGenerator = require("./src/playlistGenerator");
 const rp = require("request-promise");
 const util = require("util");
 const SpotifyService = require("./services/spotifyService");
 const MusixmatchService = require("./services/musixmatchService");
-
 class UNQfy {
   // artistData: objeto JS con los datos necesarios para crear un artista
   //   artistData.name (string)

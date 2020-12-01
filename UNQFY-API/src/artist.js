@@ -1,5 +1,5 @@
 const Duplicated = require("./duplicated");
-const Subject = require("./subject");
+const {Subject} = require("./subject");
 class Artist extends Subject{
   constructor(id, name, country) {
     super()

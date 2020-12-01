@@ -35,7 +35,6 @@ router.post("", (req, res) => {
 
     }
     const artist = unqfyR.addArtist({ name, country });
-    artist.subscribe(req.wt);
     saveUNQfy(unqfyR);
     res.status(201).json(artist);
   } catch (e) {
