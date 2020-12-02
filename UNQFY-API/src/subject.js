@@ -1,14 +1,17 @@
 const {EventEmitter} = require('events')
 
 const event = new EventEmitter()
+const events = {
+    ADDALBUM: 'addAlbum',
+    DELETEARTIST: 'deleteArtist'
+}
 class Subject{
-
-    notify(){
-        event.emit('addArtist',this)
+    notifyEvent(event,affected){
+        event.emit(event,affected)
     }
     unSubscribe(obs){
         this._subs = this._subs.filter(s=> obs)
     }
 }
 
-module.exports = {Subject:Subject, event:event};
+module.exports = {Subject:Subject, event:event, events:events};

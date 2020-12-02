@@ -1,5 +1,5 @@
 const Duplicated = require("./duplicated");
-const {Subject} = require("./subject");
+const {Subject, events} = require("./subject");
 class Artist extends Subject{
   constructor(id, name, country) {
     super()
@@ -41,7 +41,7 @@ class Artist extends Subject{
       throw new Duplicated(`Album with name ${album.name} already exists`);
     }
     this._albums.push(album);
-    this.notify();
+    this.notifyEvent(events.ADDALBUM,this);
   }
 
   hasAlbumWithId(albumId) {

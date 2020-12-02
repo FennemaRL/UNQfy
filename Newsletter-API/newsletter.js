@@ -142,6 +142,9 @@ router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia ar
 /** @TODO falta traernos todas las suscripciones de un artist */
 
 /** @TODO falta eliminación de artist y suscripciones */
+router.get("/ping",(req,res) => {
+  res.status(200).json({message:'pong'})
+})
 
 app.use("/api", router);
 app.use(function (req, res) {

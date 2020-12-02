@@ -24,7 +24,6 @@ app.use(bodyParser.json());
 
 router.use(function (req, res, next) {
   req.unquify = getUNQfy();
-  req.wt = new Observer();
   next()
 })
 
@@ -49,17 +48,11 @@ app.use("/api", router);
 app.use(function (req, res) {
   res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
 });
-router.use(function (req, res, next) {
-  req.unquify = getUNQfy();
-  req.wt.disconect();
-  delete req.wt ;
-  next()
+
+router.get("/ping",(req,res) => {
+  res.status(200).json({message:'pong'})
 })
 
-router.use(function (req, res, next) {
-  req.wt.disconect()
-  next()
-})
 
 const port = process.env.PORT || 3000;
 app.listen(port);

@@ -6,14 +6,14 @@ const Artist = require("./src/artist");
 const Playlist = require("./src/playlist");
 const Album = require("./src/album");
 const Observer = require("./src/observer");
-const {Subject} = require("./src/subject");
+const {Subject, event, events} = require("./src/subject");
 const Track = require("./src/track");
 const PlaylistGenerator = require("./src/playlistGenerator");
 const rp = require("request-promise");
 const util = require("util");
 const SpotifyService = require("./services/spotifyService");
 const MusixmatchService = require("./services/musixmatchService");
-class UNQfy {
+class UNQfy extends Subject{
   // artistData: objeto JS con los datos necesarios para crear un artista
   //   artistData.name (string)
   //   artistData.country (string)
@@ -22,6 +22,7 @@ class UNQfy {
     this._service = new Service();
     this._keyGen = new KeyGen();
     this._musixmatchService = new MusixmatchService();
+    this.Observer = new Observer();
   }
 
   addArtist(artistData) {
@@ -30,7 +31,7 @@ class UNQfy {
     - una propiedad name (string)
     - una propiedad country (string)
   */
-    return this._service.addArtist(artistData, this._keyGen);
+    return  this._service.addArtist(artistData, this._keyGen)
   }
 
   // albumData: objeto JS con los datos necesarios para crear un album
@@ -159,6 +160,7 @@ class UNQfy {
     return all_playlists;
   }
   deleteArtist(id) {
+    this.notifyEvent(events.DELETEARTIST,this._service.getArtistById(id))
     this._service.deleteArtist(id);
   }
   deleteAlbum(id) {
@@ -230,6 +232,7 @@ class UNQfy {
     const serializedData = picklify.picklify(this);
     fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2));
   }
+ 
 
   static load(filename) {
     const serializedData = fs.readFileSync(filename, { encoding: "utf-8" });
