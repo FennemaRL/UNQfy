@@ -94,7 +94,7 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
 
   getSuscriptions()
   .then(suscriptions => suscriptions[artistName])
-  .then(setSuscriptors => [...setSuscriptors])
+  .then(setSuscriptors => setSuscriptors ? [...setSuscriptors]: [])
   .then(apiSuscriptors => {
     return Promise.all(apiSuscriptors.map(suscriptor => {
       gmailClient.send_mail(

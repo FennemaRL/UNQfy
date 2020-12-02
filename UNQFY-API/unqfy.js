@@ -19,6 +19,7 @@ class UNQfy extends Subject{
   //   artistData.country (string)
   // retorna: el nuevo artista creado
   constructor() {
+    super()
     this._service = new Service();
     this._keyGen = new KeyGen();
     this._musixmatchService = new MusixmatchService();
@@ -69,7 +70,6 @@ class UNQfy extends Subject{
 
   getAlbumById(id) {
     console.log(this._service.getAlbumById(id));
-    console.log();
     return this._service.getAlbumById(id);
   }
 

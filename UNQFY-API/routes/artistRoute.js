@@ -4,7 +4,6 @@ const BadRequest = require("../src/badRequest");
 const NotFound = require("../src/notFound");
 const Duplicated = require("../src/duplicated");
 const router = express.Router();
-const { event } = require("../src")
 
 function saveUNQfy(unqfy, filename = "data.json") {
   unqfy.save(filename);
@@ -51,7 +50,6 @@ router.post("", (req, res) => {
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" });
     }
     else {
-      console.log(e)
       res.status(400).json({ status: 500, e});
     }
   }
