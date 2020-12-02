@@ -113,7 +113,7 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
     }
     return suscriptions[artistId]})
   .then(setSuscriptors => {
-    if(setSuscriptors || !setSuscriptors.size) { 
+    if(setSuscriptors) { 
       throw new NotFound()
     }
     return [...setSuscriptors] })  
@@ -162,12 +162,15 @@ router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia ar
   }
   getSuscriptions()
   .then(subs=>{
-    if(!subs[artistId] ||!subs[artistId].size || ! subs[artistName].has(mail)){
+    if(!subs[artistId] || ! subs[artistName].has(mail)){
       throw new BadRequest();
     }
     else  if(subs[artistId]){
       subs[artistId].delete(mail)
-    } 
+    }
+    if (!subs[artistId].size) {
+      delete subs[artistId]
+    }
       return subs    
   })
   .then(suscriptions => saveSuscriptions(suscriptions))
@@ -220,9 +223,51 @@ router.get("/subscriptions",(req,res) => {
     }
     })
 })
-/**
- * @TODO add remove all subs of an artist
- */
+
+router.delete("/subscriptions", (req, res) => {
+  const {artistId} = req.body
+
+  getSuscriptions().
+  then(
+    subs=>{
+      if(! artistId) {
+        throw new BadRequest();
+      }
+    return subs
+  })
+  .then(
+    subs => {
+      if(! subs[artistId]){
+        throw new NotFound();
+      }
+      delete subs[artistId]
+
+      return subs
+    }
+  )
+  .then(suscriptions => saveSuscriptions(suscriptions))
+  .then(
+    result => res.status(200).json({})
+  )
+  .catch(err => {
+    console.log(err)
+    if(err instanceof BadRequest){
+      res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
+    }
+    if(err instanceof NotFound){
+      res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" })
+    }
+    else{
+      res.status(500).json({
+        status: 500,
+        errorCode: "INTERNAL_SERVER_ERROR"
+      })
+    }
+  })
+
+
+})
+
 app.use("/api", router);
 app.use(function (req, res) {
   res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
