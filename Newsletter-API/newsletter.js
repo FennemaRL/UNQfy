@@ -40,6 +40,8 @@ function saveSuscriptions(suscriptions,filename = 'dataNS.json') {
 var router = express.Router();
 const bodyParser = require("body-parser");
 const BadRequest = require("./src/badRequest");
+const { throws } = require("assert");
+const NotFound = require("../UNQFY-API/src/notFound");
 
 app.use(bodyParser.json());
 
@@ -53,11 +55,11 @@ app.use((err, req, res, next) => {
 
 router.post("/subscribe", async (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
 
-  let {mail, artistName} = req.body
-  if(!mail || ! artistName) {
+  let {mail, artistId} = req.body
+  if(!mail || ! artistId) {
     throw new BadRequest();
   }
-  rp.get({uri: `${process.env.UNQFY}/artists/search/${artistName}`, qs: {}, json: true})
+  rp.get({uri: `${process.env.UNQFY}/artists/${artistId}`, qs: {}, json: true})
     .then(response => {
       if (!response) {
         throw new Error("bad request")
@@ -66,35 +68,55 @@ router.post("/subscribe", async (req, res) => { /** @TODO hablar inconsistencia 
       return getSuscriptions()
     })
     .then(suscriptions => {
-      if (!suscriptions[artistName] || !suscriptions[artistName].size ) {
-        suscriptions[artistName] = new Set()
+      if (!suscriptions[artistId] || !suscriptions[artistId].size ) {
+        suscriptions[artistId] = new Set()
       }
-      suscriptions[artistName].add(mail)
+      suscriptions[artistId].add(mail)
 
       return suscriptions
     })
     .then(suscriptions => saveSuscriptions(suscriptions))
     .then(() => {
-      res.status(201).json({ status: 201, message: `${mail} se subscribio al Artista ${artistName}` })
+      res.status(200).json()
     })
-    .catch(err => {
+    .catch(err => { /**@TODO refacto error handle middleware */
       if(err instanceof BadRequest){
         res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
-      }else{
-        res.status(500).json({error : err})
+      } 
+      else if(err.status === 404){
+        res.status(404).json({
+          status: 404,
+          errorCode: "RELATED_RESOURCE_NOT_FOUND"
+          })          
+      }
+      else{
+        res.status(500).json({
+          status: 500,
+          errorCode: "INTERNAL_SERVER_ERROR"
+          }
+          )
       }
       
     })
 });
 
 router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
-  const { artistId, subject, message, artistName } = req.body
-
-  console.log(req.body, "estamos en req.body de notify")
+  const { artistId, subject, message } = req.body
+  if(!subject || ! artistId || ! message) {
+    throw new BadRequest();
+  }
 
   getSuscriptions()
-  .then(suscriptions => suscriptions[artistName])
-  .then(setSuscriptors => setSuscriptors ? [...setSuscriptors]: [])
+  .then(suscriptions => {
+    if(!subject || ! artistId || ! message) {
+      throw new BadRequest();
+    }
+    return suscriptions[artistId]})
+  .then(setSuscriptors => {
+    if(setSuscriptors || !setSuscriptors.size) { 
+      throw new NotFound()
+    }
+    return [...setSuscriptors] })  
   .then(apiSuscriptors => {
     return Promise.all(apiSuscriptors.map(suscriptor => {
       gmailClient.send_mail(
@@ -113,21 +135,38 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
     }))
   })
   .then(result => {
-    console.log(result, "estamos en result feliz de notify")
-    res.status(204).json()
-  }) /** @TODO hablar 204 por body vacio */
+    res.status(200).json()
+  }) 
   .catch(err => {
-    console.log(err, "estamos en error de notify")
-    res.status(404).json({"error":"No anduvo"})
+    if(err instanceof BadRequest){
+      res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
+    }
+    else if(err instanceof NotFound){
+      res.status(404).json({ status: 404, errorCode:"RESOURCE_NOT_FOUND" })
+    }
+    else {
+      res.status(500).json({
+        status: 500,
+        errorCode: "INTERNAL_SERVER_ERROR"
+        }
+        )
+    }
+
   })
 })
 
 router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
-  let {mail, artistName} = req.body
+  let {mail, artistId} = req.body
+  if(!mail || ! artistId) {
+    throw new BadRequest();
+  }
   getSuscriptions()
   .then(subs=>{
-    if(subs[artistName]){
-      subs[artistName].delete(mail)
+    if(!subs[artistId] ||!subs[artistId].size || ! subs[artistName].has(mail)){
+      throw new BadRequest();
+    }
+    else  if(subs[artistId]){
+      subs[artistId].delete(mail)
     } 
       return subs    
   })
@@ -135,7 +174,15 @@ router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia ar
   .then(()=> 
   res.status(204).json({ status: 200, message: `${mail} se subscribio al Artista ${artistName}` }))
   .catch(err=>  {
-    res.status(404).json({ status: 404, message: err })
+    if(err instanceof BadRequest){
+      res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
+    }else{
+
+    res.status(500).json({
+      status: 500,
+      errorCode: "INTERNAL_SERVER_ERROR"
+      })
+    } 
   });
 });
 
@@ -145,7 +192,37 @@ router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia ar
 router.get("/ping",(req,res) => {
   res.status(200).json({message:'pong'})
 })
+router.get("/subscriptions",(req,res) => {
 
+  const {artistId} = req.query
+  getSuscriptions().then(
+    subs=>{
+    if(! artistId) {
+      throw new BadRequest();
+    }
+  return subs}
+  ).then(subs=> {
+    res.status(200).json({
+      "artistId": artistId,
+      "subscriptors": (subs[artistId]||subs[artistId].size)?[...subs[artistId]]:[]
+    })
+  })
+  .catch(e=>{
+    if(err instanceof BadRequest){
+      res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
+    }
+    else{
+      res.status(500).json({
+        status: 500,
+        errorCode: "INTERNAL_SERVER_ERROR"
+        }
+        )
+    }
+    })
+})
+/**
+ * @TODO add remove all subs of an artist
+ */
 app.use("/api", router);
 app.use(function (req, res) {
   res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
