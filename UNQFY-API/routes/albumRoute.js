@@ -35,6 +35,8 @@ router.post("", (req, res) => {
         .status(404)
         .json({ status: 404, errorCode: "RELATED_RESOURCE_NOT_FOUND" });
     }
+    console.log(e)
+    res.status(500).json({error: e})
   }
 });
 
@@ -42,8 +44,9 @@ router.post("", (req, res) => {
 router.get("", (req, res) => {
   // falta query params
   try {
+    const qp = req.query.name;
     const unqfyR = req.unquify;
-    const album = unqfyR.getAllAlbums();
+    const album = unqfyR.getAllAlbums(qp);
     res.status(200).json(album);
   } catch (e) {
     res
@@ -76,7 +79,7 @@ router.patch("/:id", (req, res) => {
       saveUNQfy(unqfyR);
     }
 
-    res.status(201).json(album);
+    res.status(200).json(album);
   } catch (e) {
     res
       .status(404)

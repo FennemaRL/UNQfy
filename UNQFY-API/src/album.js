@@ -33,7 +33,7 @@ class Album {
   }
 
   sameKey(albumid) {
-    return this.id === albumid;
+    return this._id === albumid;
   }
 
   searchTrackByName(content) {

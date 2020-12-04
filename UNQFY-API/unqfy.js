@@ -5,23 +5,25 @@ const KeyGen = require("./src/keyGen");
 const Artist = require("./src/artist");
 const Playlist = require("./src/playlist");
 const Album = require("./src/album");
+const Observer = require("./src/observer");
+const {Subject, event, events} = require("./src/subject");
 const Track = require("./src/track");
 const PlaylistGenerator = require("./src/playlistGenerator");
-
 const rp = require("request-promise");
 const util = require("util");
 const SpotifyService = require("./services/spotifyService");
 const MusixmatchService = require("./services/musixmatchService");
-
-class UNQfy {
+class UNQfy extends Subject{
   // artistData: objeto JS con los datos necesarios para crear un artista
   //   artistData.name (string)
   //   artistData.country (string)
   // retorna: el nuevo artista creado
   constructor() {
+    super()
     this._service = new Service();
     this._keyGen = new KeyGen();
     this._musixmatchService = new MusixmatchService();
+    this.Observer = new Observer();
   }
 
   addArtist(artistData) {
@@ -30,7 +32,7 @@ class UNQfy {
     - una propiedad name (string)
     - una propiedad country (string)
   */
-    return this._service.addArtist(artistData, this._keyGen);
+    return  this._service.addArtist(artistData, this._keyGen)
   }
 
   // albumData: objeto JS con los datos necesarios para crear un album
@@ -122,6 +124,10 @@ class UNQfy {
     );
   }
 
+  createPlaylistWithIDs(name, trackIds) {
+    return this._service.createPlaylist(name, trackIds, this._keyGen);
+  }
+
   searchByName(content) {
     console.log(this._service.searchByName(content));
     return this._service.searchByName(content);
@@ -133,13 +139,13 @@ class UNQfy {
     return this._service.getAlbumsForArtist(artistName);
   }
 
-  getAllArtists() {
-    let all_artists = this._service.getAllArtists();
+  getAllArtists(name = "") {
+    let all_artists = this._service.getAllArtists(name);
     console.log(all_artists);
     return all_artists;
   }
-  getAllAlbums() {
-    let all_albums = this._service.getAllAlbums();
+  getAllAlbums(name = "") {
+    let all_albums = this._service.getAllAlbums(name);
     console.log(all_albums);
     return all_albums;
   }
@@ -154,6 +160,7 @@ class UNQfy {
     return all_playlists;
   }
   deleteArtist(id) {
+    this.notifyEvent(events.DELETEARTIST,this._service.getArtistById(id))
     this._service.deleteArtist(id);
   }
   deleteAlbum(id) {
@@ -195,24 +202,37 @@ class UNQfy {
   }
 
   getTrackLyrics(track_id) {
-    const { artist, track } = this.getTrackByIdAndOwner(Number(track_id));
+    try {
+      const { artist, track } = this.getTrackByIdAndOwner(Number(track_id));
 
-    if (track.lyrics) {
-      return Promise.resolve(track);
-    } else {
-      return this._musixmatchService
-        .getSongLyrics(artist, track)
-        .then(({ message }) => {
-          track.setLyrics(message.body.lyrics.lyrics_body);
-          return track;
-        });
+      if (track.lyrics) {
+        return Promise.resolve(track);
+      } else {
+        return this._musixmatchService
+          .getSongLyrics(artist, track)
+          .then(({ message }) => {
+            track.setLyrics(message.body.lyrics.lyrics_body);
+            return track;
+          });
+      }
+    } catch (e) {
+      return Promise.reject(e);
     }
+  }
+
+  searchPlaylistByNameAndDuration(name, durationLT, durationGT) {
+    return this._service.searchPlaylistByNameAndDuration(
+      name,
+      durationLT,
+      durationGT
+    );
   }
 
   save(filename) {
     const serializedData = picklify.picklify(this);
     fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2));
   }
+ 
 
   static load(filename) {
     const serializedData = fs.readFileSync(filename, { encoding: "utf-8" });
@@ -228,6 +248,8 @@ class UNQfy {
       PlaylistGenerator,
       SpotifyService,
       MusixmatchService,
+      Observer,
+      Subject,
     ];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }

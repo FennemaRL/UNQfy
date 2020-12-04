@@ -2,6 +2,7 @@ const express = require("express");
 const unqfy = require("../unqfy");
 const BadRequest = require("../src/badRequest");
 const NotFound = require("../src/notFound");
+const Duplicated = require("../src/duplicated");
 const router = express.Router();
 
 function saveUNQfy(unqfy, filename = "data.json") {
@@ -16,7 +17,7 @@ router.get("/:name/populate", async (req, res) => {
     .populateAlbumsForArtist(name)
     .then((artist) => {
       saveUNQfy(unqfyR);
-      res.status(201).json({ artist: artist, tomaco: 2 });
+      res.status(201).json({  artist });
     })
     .catch((e) =>
       res.status(409).json({ errorCode: "RESOURCE_ALREADY_EXISTS" })
@@ -28,14 +29,19 @@ router.post("", (req, res) => {
   const unqfyR = req.unquify;
   try {
     if (!name || !country) {
+
+      
       throw new BadRequest("");
+
     }
     const artist = unqfyR.addArtist({ name, country });
-
     saveUNQfy(unqfyR);
     res.status(201).json(artist);
   } catch (e) {
     if (e instanceof NotFound) {
+      res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
+    }
+    if (e instanceof Duplicated) {
       res
         .status(409)
         .json({ status: 409, errorCode: "RESOURCE_ALREADY_EXISTS" });
@@ -43,13 +49,16 @@ router.post("", (req, res) => {
     if (e instanceof BadRequest) {
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" });
     }
+    else {
+      res.status(400).json({ status: 500, e});
+    }
   }
 });
 //get all
 router.get("", (req, res) => {
-  const qp = req.query; // TODO
+  const qp = req.query.name; // TODO
   const unqfyR = req.unquify;
-  let artists = unqfyR.getAllArtists();
+  let artists = unqfyR.getAllArtists(qp);
   res.status(200).json(Object.keys(artists).length ? artists : []);
 });
 // get by id
@@ -60,11 +69,11 @@ router.get("/:id", (req, res) => {
     const artist_with_name = unqfyR.getArtistById(artist_name);
 
     if (artist_with_name) {
-      res.status(200).json({ artist: artist_with_name[0] });
-    } else if (artist_with_name && artist_with_name[0].albums) {
+      res.status(200).json(artist_with_name);
+    } else if (artist_with_name && artist_with_name.albums) {
       unqfyR.populateAlbumsForArtist(artist_name).then(() => {
         saveUNQfy(unqfyR);
-        res.status(200).json({ artist: artist_with_name[0] });
+        res.status(200).json(artist_with_name);
       });
     }
   } catch (e) {
@@ -73,10 +82,9 @@ router.get("/:id", (req, res) => {
   }
 });
 // update
-router.patch("/:id", (req, res) => {
-  const id = req.params.id;
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
   const { name, country } = req.body;
-  console.log(name);
   const unqfyR = req.unquify;
   try {
     const artist = unqfyR.getArtistById(id);
@@ -104,4 +112,15 @@ router.delete("/:id", (req, res) => {
     res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
   }
 });
+// get by name
+router.get("/search/:name", (req, res) => {
+  const unqfyR = req.unquify;
+  const artistName = req.params.name;
+  const artist = unqfyR.searchArtistByName(artistName);
+
+  if(!artist.length){
+    res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
+  }
+  res.status(200).json({artist: artist[0]})
+})
 module.exports = router;

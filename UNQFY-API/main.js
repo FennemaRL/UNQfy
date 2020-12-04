@@ -64,6 +64,8 @@ let commandSearchTracksByGenres = (unquify, data) => unquify.getTracksMatchingGe
 commands.push(new Command("SearchTracksByGenres", commandSearchTracksByGenres))
 let commandSearchTracksByArtist = (unquify, data) => unquify.getTracksMatchingArtist(data.artistName)
 commands.push(new Command("SearchTracksByArtist", commandSearchTracksByArtist))
+let commandPopulateAlbumsForArtist = (unquify, data) => unquify.populateAlbumsForArtist(data.artistName)
+commands.push(new Command("PopulateAlbumsForArtist",commandPopulateAlbumsForArtist))
 
 let commandErrorParams= (unquify, data) => { throw new Error (`el comando ->"${data.commando}"<- no existe`)}
 commands.push(new Command(undefined, commandErrorParams))
@@ -88,8 +90,13 @@ function main() {
       data[value] = argsWithNumbers[indx+1]
     }
   })
-  commandToExec.do(unqfy,data)
-  saveUNQfy(unqfy);
+  let resultOfCommand = commandToExec.do(unqfy,data)
+  
+  if (commando !== "PopulateAlbumsForArtist") {
+    saveUNQfy(unqfy);
+  } else {
+    resultOfCommand.then(() => saveUNQfy(unqfy));
+  }
 
   // fata crear comandos y archivo para carga y comando npm
 }

@@ -8,7 +8,7 @@ class Command {
       return criteria === command
     }
     do(unquify, data){
-      this._fn(unquify,data);
+      return this._fn(unquify,data);
     }
     sameCriteria(criteria ){
       return this._criteria? this._criteria === criteria : true
