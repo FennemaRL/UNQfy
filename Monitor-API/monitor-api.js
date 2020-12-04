@@ -11,7 +11,7 @@ const BadRequest = require("./src/badRequest");
 const NotFound = require("./src/notFound");
 const {monitor} = require("./src/monitor")
 
-monitor.beginListen()
+setTimeout(()=>{monitor.beginListen()},10000);
 
 app.use(bodyParser.json());
 
@@ -24,7 +24,23 @@ app.use((err, req, res, next) => {
 });
 
 router.get("/status", (req, res) => {
-  res.status(200).send(monitor.servicesStatus());
+  let servicesStatus = monitor.getServicesStatus()
+  res.status(200).json(servicesStatus);
+})
+
+router.patch("/stateListening", (req, res) => {
+  const {enable} = req.query
+
+  if (enable === 'true') {
+    monitor.startListening()
+    monitor.beginListen()
+    res.status(200).json({message: "El servicio se ha activado exitosamente"});
+  } else if (enable === 'false') {
+    monitor.stopListening()
+    res.status(200).json({message: "El servicio se ha desactivado exitosamente"});
+  } else {
+    res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" });
+  }
 })
 
 app.use("/api", router);
