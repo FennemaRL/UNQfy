@@ -52,7 +52,7 @@ class Observer {
                return { severity: 'error', message:`Error al intentar agregar ${ClassName}: ${error}`}
             
             case actions.DELETE :
-                return { severity: 'error', message:`Error al intentar borro ${ClassName}:  ${error}`}
+                return { severity: 'error', message:`Error al intentar borrar ${ClassName}:  ${error}`}
             
         }
     }

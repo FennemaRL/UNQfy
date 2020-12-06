@@ -22,27 +22,23 @@ class Artist extends Subject{
   }
 
   set name(name) {
-    this.notifyEvent(events.Arstist, {type: actions.EDIT, className:this.constructor.name, affected: this })
+    this.notifyEvent(events.ARTIST,{type: actions.EDIT, affected:this, className:this.constructor.name});
     this._name = name;
   }
 
   set country(country) {
-    this._country = country;
-  }
-
-  updateArtist(name) {
-    this._name = name;
-  }
-  updateCountry(country) {
+    this.notifyEvent(events.ARTIST,{type: actions.EDIT, affected:this, className:this.constructor.name});
     this._country = country;
   }
 
   addAlbum(album) {
     if (this._albums.some((a) => a.name === album.name)) {
-      throw new Duplicated(`Album with name ${album.name} already exists`);
+      const error_message = `Album with name ${album.name} already exists`
+      this.notifyEvent(events.ERROR,{type: actions.ADD, className:album.constructor.name, error:error_message});
+      throw new Duplicated(error_message);
     }
     this._albums.push(album);
-    this.notifyEvent(events.ALBUM,{type: actions.ADD, affected:album, className:album.constructor.name,  affectedArtist:this});
+    this.notifyEvent(events.ALBUM,{type: actions.ADD, affected:album, className:album.constructor.name, affectedArtist:this});
   }
 
   hasAlbumWithId(albumId) {
@@ -103,6 +99,7 @@ class Artist extends Subject{
   deleteAlbum(albumID) {
     let album_to_delete = this._albums.find((album) => album.id === albumID);
     this._albums = this._albums.filter((album) => album.id != albumID);
+    this.notifyEvent(events.ALBUM,{type: actions.DELETE, affected:album_to_delete, className:album_to_delete.constructor.name});
     return album_to_delete;
   }
   deleteTrack(trackID) {

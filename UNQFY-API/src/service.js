@@ -5,9 +5,8 @@ const Duplicated = require("./duplicated");
 const PlaylistGenerator = require("./playlistGenerator");
 const Playlist = require("./playlist");
 const NotFound = require("./notFound");
-const {Subject, events} = require("./subject");
+const {Subject, events, actions} = require("./subject");
 class Service  extends Subject{
-  /**@TODO add notifications */
   constructor() {
     super()
     this._artists = {};
@@ -19,15 +18,15 @@ class Service  extends Subject{
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
       if (artist.name === artistData.name) {
-        
-        throw new Duplicated(
-          `Artist with name ${artistData.name} already exists`
-        );
+        const error_message = `Artist with name ${artistData.name} already exists`
+        this.notifyEvent(events.ERROR,{type: actions.ADD, className:artist.constructor.name, error:error_message});
+        throw new Duplicated(error_message);
       }
     });
     const id = keyGen.getKeyArtist();
     const newArtist = new Artist(id, artistData.name, artistData.country);
     this._artists[id] = newArtist;
+    this.notifyEvent(events.ARTIST,{type: actions.ADD, affected:newArtist, className:newArtist.constructor.name});
     return newArtist;
   }
 
@@ -36,7 +35,9 @@ class Service  extends Subject{
     const newAlbum = new Album(id, artistId, albumData.name, albumData.year);
     const artistFind = this._artists[artistId];
     if (!artistFind) {
-      throw new NotFound(`Artist with ID ${artistId} was not found`);
+      const error_message = `Artist with ID ${artistId} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.ADD, className:newAlbum.constructor.name, error:error_message});
+      throw new NotFound(error_message);
     }
     artistFind.addAlbum(newAlbum);
     return newAlbum;
@@ -52,7 +53,9 @@ class Service  extends Subject{
       }
     });
     if (!albumOwner) {
-      throw new NotFound(`Album with ID ${albumId} was not found`);
+      const error_message = `Album with ID ${albumId} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.ADD, className:"Track", error:error_message});
+      throw new NotFound(error_message);
     }
 
     const createdTrack = new Track(
@@ -253,17 +256,17 @@ class Service  extends Subject{
   deleteArtist(artistID) {
     let artist_to_delete = this._artists[artistID];
     if (!artist_to_delete) {
-
-      throw new NotFound(`Artist with ID ${artistID} was not found`);
+      const error_message = `Artist with ID ${artistID} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.DELETE, className:"Artist", error:error_message});
+      throw new NotFound(error_message);
     } else {
       delete this._artists[artistID];
       let tracks_to_delete = artist_to_delete.getAllTracks();
       Object.keys(this._playlists).forEach((playlistId) => {
         let playlist = this._playlists[playlistId];
-        debugger;
         playlist.deleteTracks(tracks_to_delete);
       });
-      //artist_to_delete.getAllAlbums().forEach(album => this.deleteAlbum(album.id))
+      this.notifyEvent(events.ARTIST,{type: actions.DELETE, affected:artist_to_delete, className:artist_to_delete.constructor.name});
     }
   }
   deleteAlbum(albumID) {
@@ -275,7 +278,9 @@ class Service  extends Subject{
       }
     });
     if (!album_owner) {
-      throw new NotFound(`Album with ID ${albumID} was not found`);
+      const error_message = `Album with ID ${albumID} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.DELETE, className:"Album", error:error_message});
+      throw new NotFound(error_message);
     } else {
       let album_to_delete = album_owner.deleteAlbum(albumID);
       let tracks_to_delete = album_to_delete.tracks;
@@ -294,7 +299,9 @@ class Service  extends Subject{
       }
     });
     if (!track_owner) {
-      throw new NotFound(`Track with ID ${trackID} was not found`);
+      const error_message = `Track with ID ${trackID} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.DELETE, className:"Album", error:error_message});
+      throw new NotFound(error_message);
     } else {
       let track_to_delete = track_owner.deleteTrack(trackID);
       Object.keys(this._playlists).forEach((playlistId) => {
@@ -316,33 +323,39 @@ class Service  extends Subject{
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
       if (artist.name === name) {
-        throw new Duplicated(
-          `Artist with name ${artistData.name} already exists`
-        );
+        const error_message = `Artist with name ${artistData.name} already exists`
+        this.notifyEvent(events.ERROR,{type: actions.EDIT, className:"Artist", error:error_message});
+        throw new Duplicated(error_message);
       }
     });
 
     let artist_with_id = this._artists[id];
     if (!artist_with_id) {
-      throw new NotFound(`Artist with ID ${id} was not found`);
+      const error_message = `Artist with ID ${id} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.EDIT, className:"Artist", error:error_message});
+      throw new NotFound(error_message);
     }
-    artist_with_id.updateName(name);
+    artist_with_id.name = name;
     return artist_with_id;
   }
 
   updateArtistCountry(id, country) {
     let artist_with_id = this._artists[id];
     if (!artist_with_id) {
-      throw new NotFound(`Artist with ID ${id} was not found`);
+      const error_message = `Artist with ID ${id} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.EDIT, className:"Artist", error:error_message});
+      throw new NotFound(error_message);
     }
-    artist_with_id.updateCountry(country);
+    artist_with_id.country = country;
     return artist_with_id;
   }
 
   updateAlbum(id, year) {
     let album_with_id = getAlbumById(id);
     if (!album_with_id) {
-      throw new NotFound(`Album with ID ${id} was not found`);
+      const error_message = `Album with ID ${id} was not found`
+      this.notifyEvent(events.ERROR,{type: actions.EDIT, className:"Album", error:error_message});
+      throw new NotFound(error_message);
     }
     album_with_id.updateAlbum(year);
     return album_with_id;
