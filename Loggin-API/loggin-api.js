@@ -28,6 +28,7 @@ var Status = { Error: 'error', Info: 'info' }
 
 //routes
 var router = express.Router();
+router.enableLogg = true;
 const bodyParser = require("body-parser");
 
 //setTimeout(()=>{monitor.beginListen()},10000);
@@ -42,21 +43,14 @@ app.use((err, req, res, next) => {
   next();
 });
 
-router.get("/status", (req, res) => {
-
-  /**
-   * @TODO running apagar prender
-   */
-  res.status(200).json();
-})
-
-router.patch("/enable", (req, res) => {
+router.patch("/enableLogg", (req, res) => {
   const {enable} = req.query
 
   if (enable === 'true') {
+    router.enableLogg = true
     res.status(200).json({message: "El servicio se ha activado exitosamente"});
   } else if (enable === 'false') {
-
+    router.enableLogg = false
     res.status(200).json({message: "El servicio se ha desactivado exitosamente"});
   } else {
     res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" });
@@ -70,6 +64,11 @@ router.post("/logg", (req, res) => {
     if(!severity || ! message || (Status.Error != severity && Status.Info != severity)) {
       res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" });
       return ;
+    }
+
+    if (!router.enableLogg) {
+      res.status(200).send({ message: 'el servicio Logg se encuentra desactivado' })
+      return;
     }
 
     Promise.all([Promise.resolve(winston.log(severity, message)),addLog(` status: ${severity}, message: ${message}`)])
