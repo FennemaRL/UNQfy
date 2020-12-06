@@ -24,6 +24,7 @@ app.use(bodyParser.json());
 
 router.use(function (req, res, next) {
   req.unquify = getUNQfy();
+  req.wc =  new Observer();
   next()
 })
 

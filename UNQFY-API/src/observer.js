@@ -1,4 +1,4 @@
-const { event,events} = require("./subject")
+const { event,events, actions} = require("./subject")
 const rp = require("request-promise");
 require('dotenv').config()
 
@@ -7,30 +7,68 @@ class Observer {
         if (!Observer._instance) {
             Observer._instance = this;
             this.notifyNewsLetter()
-            this.notifyLogger()
+            this.subscribeEvents()
         }
         return Observer._instance;
     }
     disconect(){
-        event.off('addAlbum')
+        for (let eventName in events) {
+            event.off(eventName)
+        }
     }
     notifyNewsLetter(){
-        event.on(events.ADDALBUM, (artist) =>{
-            var options = {
-            uri: `${process.env.NEWS}/notify_new_album`,
-            body: {artistId: artist.id, subject: `Nuevo Album para artista ${artist.name}`, message: `Se ha agregado el album ${artist.getAllAlbums()[artist.getAllAlbums().length-1].name} al artista ${artist.name}`, artistName: artist.name},
-            json: true,
-        };
-        rp.post(options)
+        event.on(events.ALBUM, (payload) =>{
+            if(payload.type == actions.ADD){
+                const options = {
+                    uri: `${process.env.NEWS}/notify_new_album`,
+                    body: {artistId: payload.affectedArtist.id, subject: `Nuevo Album para artista ${payload.affectedArtist.name}`, message: `Se ha agregado el album ${payload.affected.name} al artista ${payload.affectedArtist.name}`, artistName: payload.affectedArtist.name},
+                    json: true,
+                };
+                rp.post(options)
+            }
       })
     }
-    notifyLogger(){
-        Object.values(events).forEach(eventName=> {
-           /* event.on(eventName,(affected)=>{
-            rp.post({uri:`${process.env.LOG}/${eventName}`, body:{affected}, json:true})
+    subscribeEvents(){
+        for (let eventName of Object.values(events)) {
+            event.on(eventName, (payload) =>{// use arrow to not bind dist prove
+                console.log(eventName, payload)
+                this.notifyLogger(payload,eventName != events.ERROR ?this.getBodyEntity : this.getBodyEntityError)
+            })
+        }
+    }
 
-            })*/
-        })
+    notifyLogger(payload,getBody){
+        const options = {
+            uri: `${process.env.LOGG}/logg`,
+            body: getBody(payload.type, payload.className,payload.affected, payload.error),
+            json: true,
+        };
+    rp.post(options).then(res=>console.log("funca"+res)).catch(err=>console.log("funca"+err, process.env.LOGG))
+    }
+
+    getBodyEntityError(action,ClassName,affected,error){
+        switch (action) {
+            case actions.ADD :
+               return { severity: 'error', message:`Error al intentar agregar ${ClassName}: ${error}`}
+            
+            case actions.DELETE :
+                return { severity: 'error', message:`Error al intentar borro ${ClassName}:  ${error}`}
+            
+        }
+    }
+
+    getBodyEntity(action,ClassName,affected,error){
+        switch (action) {
+            case actions.ADD :
+               return { severity: 'info', message:`se agrego el ${ClassName} con id: ${affected.id}`}
+            
+            case actions.DELETE :
+                return { severity: 'info', message:`se borro el ${ClassName} con id: ${affected.id}`}
+            
+            case actions.EDIT :
+                return { severity: 'warning', message:`se modifico el ${ClassName} con id: ${affected.id}`}
+            
+        }
     }
 }
 

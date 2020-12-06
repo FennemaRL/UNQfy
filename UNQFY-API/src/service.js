@@ -5,9 +5,11 @@ const Duplicated = require("./duplicated");
 const PlaylistGenerator = require("./playlistGenerator");
 const Playlist = require("./playlist");
 const NotFound = require("./notFound");
-
-class Service {
+const {Subject, events} = require("./subject");
+class Service  extends Subject{
+  /**@TODO add notifications */
   constructor() {
+    super()
     this._artists = {};
     this._playlists = {};
     this._playlistGenerator = new PlaylistGenerator();
@@ -17,6 +19,7 @@ class Service {
     Object.keys(this._artists).forEach((artistId) => {
       let artist = this._artists[artistId];
       if (artist.name === artistData.name) {
+        
         throw new Duplicated(
           `Artist with name ${artistData.name} already exists`
         );
@@ -250,6 +253,7 @@ class Service {
   deleteArtist(artistID) {
     let artist_to_delete = this._artists[artistID];
     if (!artist_to_delete) {
+
       throw new NotFound(`Artist with ID ${artistID} was not found`);
     } else {
       delete this._artists[artistID];

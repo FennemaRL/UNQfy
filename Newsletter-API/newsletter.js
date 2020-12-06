@@ -107,13 +107,14 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
   }
 
   getSuscriptions()
-  .then(suscriptions => {
+  .then(susbcriptions => {
     if(!subject || ! artistId || ! message) {
       throw new BadRequest();
     }
-    return suscriptions[artistId]})
+    console.log(susbcriptions, susbcriptions[artistId])
+    return susbcriptions[artistId]})
   .then(setSuscriptors => {
-    if(setSuscriptors) { 
+    if(!setSuscriptors) { 
       throw new NotFound()
     }
     return [...setSuscriptors] })  
@@ -135,9 +136,11 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
     }))
   })
   .then(result => {
+    console.log("funca")
     res.status(200).json()
   }) 
   .catch(err => {
+    console.log(err)
     if(err instanceof BadRequest){
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
     }

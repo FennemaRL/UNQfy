@@ -12,7 +12,8 @@
     "googleapis": "^65.0.0",
     "picklify": "github:lwoites/picklify",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "winston-loggly-bulk": "^3.1.1"
   },
   "devDependencies": {
     "eslint": "^4.19.1",

@@ -46,7 +46,8 @@ class Monitor {
   }
 
   getServicesStatus() {
-    return {status: this.lastStatusLog, lastTimeChecked: this.lastTimeChecked}
+    return {status: this.lastStatusLog, lastTimeChecked: this.lastTimeChecked.toTimeString()
+    }
   }
 }
 

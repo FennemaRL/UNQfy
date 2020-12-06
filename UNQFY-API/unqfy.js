@@ -5,12 +5,9 @@ const KeyGen = require("./src/keyGen");
 const Artist = require("./src/artist");
 const Playlist = require("./src/playlist");
 const Album = require("./src/album");
-const Observer = require("./src/observer");
 const {Subject, event, events} = require("./src/subject");
 const Track = require("./src/track");
 const PlaylistGenerator = require("./src/playlistGenerator");
-const rp = require("request-promise");
-const util = require("util");
 const SpotifyService = require("./services/spotifyService");
 const MusixmatchService = require("./services/musixmatchService");
 class UNQfy extends Subject{
@@ -23,7 +20,6 @@ class UNQfy extends Subject{
     this._service = new Service();
     this._keyGen = new KeyGen();
     this._musixmatchService = new MusixmatchService();
-    this.Observer = new Observer();
   }
 
   addArtist(artistData) {
@@ -160,8 +156,9 @@ class UNQfy extends Subject{
     return all_playlists;
   }
   deleteArtist(id) {
-    this.notifyEvent(events.DELETEARTIST,this._service.getArtistById(id))
+    
     this._service.deleteArtist(id);
+    //this.notifyEvent(events.DELETEARTIST,this._service.getArtistById(id))
   }
   deleteAlbum(id) {
     this._service.deleteAlbum(id);
@@ -248,7 +245,6 @@ class UNQfy extends Subject{
       PlaylistGenerator,
       SpotifyService,
       MusixmatchService,
-      Observer,
       Subject,
     ];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
