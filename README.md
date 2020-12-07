@@ -101,3 +101,10 @@ node main.js GetPlayListsAll
 - node main.js **GetPlayListAll**
 
 Ejemplo -> node main.js GetPlayListAll
+
+
+##Docker Commands:
+docker build -t loggin-image .
+docker run -e TOKENWINSTON='0761ce5d-2160-4b48-abda-40b2d80c9fc8' -e DOMAIN='grupocho' -p 3003:3003 --name loggin-container -v ~/data:/home/node/my_node_app/app_data --user node loggin-image
+docker stop loggin-container
+docker start loggin-container

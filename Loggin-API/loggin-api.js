@@ -6,7 +6,7 @@ const util = require("util");
 const read = util.promisify(fs.readFile)
 const write = util.promisify(fs.writeFile)
 //utils
-const fileName= 'log.txt'
+const fileName= 'app_data/log.txt'
 function addLog(stringLog,filename = fileName) {
   if (fs.existsSync(filename)) {
     return read(filename).then(res => write(filename,res+"\n"+stringLog))
@@ -14,6 +14,8 @@ function addLog(stringLog,filename = fileName) {
     return write(filename, stringLog) 
   }
 }
+
+/** @TODO sacar "funca" */
 
 var winston  = require('winston');
 var {Loggly} = require('winston-loggly-bulk');

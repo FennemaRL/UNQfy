@@ -24,7 +24,7 @@ router.get("/:name/populate", async (req, res) => {
     );
 });
 // create
-router.post("", (req, res) => {
+router.post("", (req, res) => { /** @TODO ver double header after sent */
   const { name, country } = req.body;
   const unqfyR = req.unquify;
   try {
@@ -41,12 +41,12 @@ router.post("", (req, res) => {
     if (e instanceof NotFound) {
       res.status(404).json({ status: 404, errorCode: "RESOURCE_NOT_FOUND" });
     }
-    if (e instanceof Duplicated) {
+    else if (e instanceof Duplicated) {
       res
         .status(409)
         .json({ status: 409, errorCode: "RESOURCE_ALREADY_EXISTS" });
     }
-    if (e instanceof BadRequest) {
+    else if (e instanceof BadRequest) {
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" });
     }
     else {
