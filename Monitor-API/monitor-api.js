@@ -1,14 +1,11 @@
 const express = require("express");
 const app = express();
-const rp = require("request-promise");
 require('dotenv').config()
 
 
 //routes
 var router = express.Router();
 const bodyParser = require("body-parser");
-const BadRequest = require("./src/badRequest");
-const NotFound = require("./src/notFound");
 const {monitor} = require("./src/monitor")
 
 setTimeout(()=>{monitor.beginListen()},10000);

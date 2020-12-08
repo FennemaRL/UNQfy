@@ -11,7 +11,8 @@ const rp = require("request-promise");
 require('dotenv').config()
 var router = express.Router();
 const bodyParser = require("body-parser");
-function getUNQfy(filename = "data.json") {
+const filenamev='./app_data/data.json'
+function getUNQfy(filename = filenamev) {
   let unqfy = new unqmod.UNQfy();
   if (fs.existsSync(filename)) {
     unqfy = unqmod.UNQfy.load(filename);

@@ -11,7 +11,8 @@ const commandGetAll = require('./commands/get-all/get-all')
 
 
 // Retorna una instancia de UNQfy. Si existe filename, recupera la instancia desde el archivo.
-function getUNQfy(filename = 'data.json') {
+const filenamev='./app_data/data.json'
+function getUNQfy(filename = filenamev) {
   let unqfy = new unqmod.UNQfy();
   if (fs.existsSync(filename)) {
     unqfy = unqmod.UNQfy.load(filename);
@@ -19,7 +20,7 @@ function getUNQfy(filename = 'data.json') {
   return unqfy;
 }
 
-function saveUNQfy(unqfy, filename = 'data.json') {
+function saveUNQfy(unqfy, filename = filenamev) {
   unqfy.save(filename);
 }
 

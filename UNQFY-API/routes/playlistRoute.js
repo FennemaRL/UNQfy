@@ -5,8 +5,8 @@ const NotFound = require("../src/notFound");
 const requestPromise = require("request-promise");
 const unqfy = require("../unqfy");
 const BadRequest = require("../src/badRequest");
-
-function saveUNQfy(unqfy, filename = "data.json") {
+const filenamev='./app_data/data.json'
+function saveUNQfy(unqfy, filename = filenamev) {
     unqfy.save(filename);
 }
 

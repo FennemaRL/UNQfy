@@ -104,7 +104,43 @@ Ejemplo -> node main.js GetPlayListAll
 
 
 ##Docker Commands:
-docker build -t loggin-image .
-docker run -e TOKENWINSTON='0761ce5d-2160-4b48-abda-40b2d80c9fc8' -e DOMAIN='grupocho' -p 3003:3003 --name loggin-container -v ~/data:/home/node/my_node_app/app_data --user node loggin-image
-docker stop loggin-container
-docker start loggin-container
+
+    ** Logg
+    docker build -t loggin-image .
+
+    docker run -e TOKENWINSTON='0761ce5d-2160-4b48-abda-40b2d80c9fc8' -e DOMAIN='grupocho'  --network="host"  -p 3003:3003 --name loggin-container -v ~/data:/home/node/my_node_app/app_data --user node loggin-image
+
+    docker stop loggin-container
+    docker start loggin-container
+
+
+    ** Monitor
+    docker build -t monitor-image .
+   
+    docker run -e SERVICE_LIST_WIDTH_NAME='[["http://localhost:3003/api","LOGG"],["http://localhost:3000/api","UNQFY"],["http://localhost:3001/api","NewsLetter"]]' -e DISCORD_URI="https://discord.com/api/webhooks/783470040645107773/kP4oMFsVT2SYZPmAS1fkwv5F9ZREKyco5xZbJsHovedjcVzn8X50CHjf14Vu0tV_jeJ7" --network="host" -p 3002:3002 --name monitor-container --user node monitor-image
+    
+    docker stop monitor-image .
+    docker start monitor-image .
+
+     ** News
+    docker build -t newsletter-image .
+   
+    docker run -e UNQFY='http://localhost:3000/api' -e NEWS='http://localhost:3001/api' -e NEWSLETTER_NAME="UNQfy Grupo 8" -e NEWSLETTER_MAIL='unqfy.grupo.8@gmail.com' --network="host" -p 3001:3001 --name newsletter-container -v ~/data:/home/node/my_node_app/app_data  --user node newsletter-image
+    
+    docker stop newsletter-container .
+    docker start newsletter-container .
+
+    ++ Unquify
+
+
+    docker build -t unqfy-image .
+
+    docker run -e MUSIXMATCH='8a6a87f75e222f2a1e0e90701bc32cb3' -e UNQFY='http://localhost:3000/api' -e 'NEWS=http://localhost:3001/api' -e LOGG='http://localhost:3003/api' --network="host" -p 3000:3000 --name unqfy-container -v ~/data:/home/node/my_node_app/app_data --user node unqfy-image
+
+
+    docker stop  unqfy-container .
+    docker start unqfy-container .
+
+    docker start unqfy-container loggin-container nesletter-container monitor-container
+    
+    docker stop unqfy-container loggin-container nesletter-container monitor-container 

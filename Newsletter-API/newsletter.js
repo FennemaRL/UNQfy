@@ -11,7 +11,8 @@ const GMailAPIClient = require('./src/GMailAPIClient');
 const gmailClient = new GMailAPIClient();
 
 //utils
-function getSuscriptions(filename = 'dataNS.json') {
+const fileUrl= './app_data/dataNS.json'
+function getSuscriptions(filename = fileUrl) {
   if (fs.existsSync(filename)) {
     return read(filename)
       .then(
@@ -29,7 +30,7 @@ function getSuscriptions(filename = 'dataNS.json') {
   }
 }
 
-function saveSuscriptions(suscriptions,filename = 'dataNS.json') {
+function saveSuscriptions(suscriptions,filename = fileUrl) {
   res = {}
   Object.keys(suscriptions).forEach(k=>res[k]= [...(suscriptions[k])])
 
@@ -41,7 +42,7 @@ var router = express.Router();
 const bodyParser = require("body-parser");
 const BadRequest = require("./src/badRequest");
 const { throws } = require("assert");
-const NotFound = require("../UNQFY-API/src/notFound");
+const NotFound = require("./src/notFound");
 
 app.use(bodyParser.json());
 
@@ -92,7 +93,7 @@ router.post("/subscribe", async (req, res) => { /** @TODO hablar inconsistencia 
       else{
         res.status(500).json({
           status: 500,
-          errorCode: "INTERNAL_SERVER_ERROR"
+          errorCode: "INTERNAL_SERVER_ERROR", error: err.toString()
           }
           )
       }

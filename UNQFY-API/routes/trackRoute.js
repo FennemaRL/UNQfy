@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Duplicated = require("../src/duplicated");
 const NotFound = require("../src/notFound");
-function saveUNQfy(unqfy, filename = "data.json") {
+const filenamev='./app_data/data.json'
+function saveUNQfy(unqfy, filename = filenamev) {
   unqfy.save(filename);
 }
 router.post("", (req, res) => {
