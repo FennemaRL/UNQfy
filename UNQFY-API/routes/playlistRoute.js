@@ -2,13 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const NotFound = require("../src/notFound");
-const requestPromise = require("request-promise");
-const unqfy = require("../unqfy");
 const BadRequest = require("../src/badRequest");
-const filenamev='./app_data/data.json'
-function saveUNQfy(unqfy, filename = filenamev) {
-    unqfy.save(filename);
-}
+const { saveUNQfy } = require("../src/utils")
+
 
 //add by duration and genres
 router.post("", (req, res) => {

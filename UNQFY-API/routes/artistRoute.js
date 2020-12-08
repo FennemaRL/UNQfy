@@ -1,14 +1,11 @@
 const express = require("express");
-const unqfy = require("../unqfy");
 const BadRequest = require("../src/badRequest");
 const NotFound = require("../src/notFound");
 const Duplicated = require("../src/duplicated");
 const router = express.Router();
 
-const filenamev='./app_data/data.json'
-function saveUNQfy(unqfy, filename = filenamev) {
-  unqfy.save(filename);
-}
+const { saveUNQfy } = require("../src/utils")
+
 //populate
 router.get("/:name/populate", async (req, res) => {
   const unqfyR = req.unquify;

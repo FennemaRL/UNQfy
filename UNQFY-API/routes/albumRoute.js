@@ -3,13 +3,10 @@ const router = express.Router();
 
 const NotFound = require("../src/notFound");
 const Duplicated = require("../src/duplicated");
-const requestPromise = require("request-promise");
-const unqfy = require("../unqfy");
 const BadRequest = require("../src/badRequest");
-const filenamev='./app_data/data.json'
-function saveUNQfy(unqfy, filename = filenamev) {
-  unqfy.save(filename);
-}
+
+const { saveUNQfy } = require("../src/utils")
+
 //add
 router.post("", (req, res) => {
   const { artistId, name, year } = req.body;
