@@ -15,8 +15,6 @@ function addLog(stringLog,filename = fileName) {
   }
 }
 
-/** @TODO sacar "funca" */
-
 var winston  = require('winston');
 var {Loggly} = require('winston-loggly-bulk');
 winston.add(new Loggly({
@@ -33,14 +31,12 @@ var router = express.Router();
 router.enableLogg = true;
 const bodyParser = require("body-parser");
 
-//setTimeout(()=>{monitor.beginListen()},10000);
 
 app.use(bodyParser.json());
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-    console.error(err);
-    return res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" }); // Bad request
+    return res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" }); 
   }
   next();
 });
@@ -62,7 +58,6 @@ router.patch("/enableLogg", (req, res) => {
 
 router.post("/logg", (req, res) => {
   const {severity, message} = req.body
-  console.log({severity, message})
     if(!severity || ! message || (Status.Error != severity && Status.Info != severity)) {
       res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" });
       return ;
@@ -75,7 +70,7 @@ router.post("/logg", (req, res) => {
 
     Promise.all([Promise.resolve(winston.log(severity, message)),addLog(` status: ${severity}, message: ${message}`)])
     .then(() => res.status(200).json({message: "Se a loggeado correctamente"}))
-    .catch(err =>{ console.log(err); res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" })}  )
+    .catch(err =>{res.status(400).send({ status: 400, errorCode: "BAD_REQUEST" })}  )
    }  
 )
 

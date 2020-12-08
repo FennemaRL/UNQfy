@@ -12,7 +12,6 @@ WORKDIR /home/node/my_node_app
 # Copia el package.json package-lock.json en /home/node/my_node_app
 COPY package.json .
 #COPY package-lock.json .
-COPY src .
 COPY loggin-api.js .
 #COPY app_data .
 
@@ -36,7 +35,7 @@ USER node
 
 # Comando por defecto sino se provee uno al hacer docker run
 # El comando corre el servicio
-CMD [ "node", "loggin-api" ]
+CMD [ "node", "app" ]
 
 # LISTO!
 

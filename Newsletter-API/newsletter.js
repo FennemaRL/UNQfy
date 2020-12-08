@@ -8,6 +8,11 @@ const read = util.promisify(fs.readFile)
 const write = util.promisify(fs.writeFile)
 const GMailAPIClient = require('./src/GMailAPIClient');
 
+var router = express.Router();
+const bodyParser = require("body-parser");
+const BadRequest = require("./src/badRequest");
+const NotFound = require("./src/notFound");
+
 const gmailClient = new GMailAPIClient();
 
 //utils
@@ -38,12 +43,6 @@ function saveSuscriptions(suscriptions,filename = fileUrl) {
 }
 
 //routes
-var router = express.Router();
-const bodyParser = require("body-parser");
-const BadRequest = require("./src/badRequest");
-const { throws } = require("assert");
-const NotFound = require("./src/notFound");
-
 app.use(bodyParser.json());
 
 app.use((err, req, res, next) => {
@@ -54,7 +53,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-router.post("/subscribe", async (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
+router.post("/subscribe", async (req, res) => { 
 
   let {mail, artistId} = req.body
   if(!mail || ! artistId) {
@@ -101,7 +100,7 @@ router.post("/subscribe", async (req, res) => { /** @TODO hablar inconsistencia 
     })
 });
 
-router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
+router.post("/notify_new_album", async (req, res) => {
   const { artistId, subject, message } = req.body
   if(!subject || ! artistId || ! message) {
     throw new BadRequest();
@@ -112,7 +111,6 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
     if(!subject || ! artistId || ! message) {
       throw new BadRequest();
     }
-    console.log(susbcriptions, susbcriptions[artistId])
     return susbcriptions[artistId]})
   .then(setSuscriptors => {
     if(!setSuscriptors) { 
@@ -137,11 +135,9 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
     }))
   })
   .then(result => {
-    console.log("funca")
     res.status(200).json()
   }) 
   .catch(err => {
-    console.log(err)
     if(err instanceof BadRequest){
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
     }
@@ -159,7 +155,7 @@ router.post("/notify_new_album", async (req, res) => { /** @TODO hablar inconsis
   })
 })
 
-router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia artist name/ID */
+router.delete("/unsubscribe", (req, res) => {
   let {mail, artistId} = req.body
   if(!mail || ! artistId) {
     throw new BadRequest();
@@ -193,9 +189,6 @@ router.delete("/unsubscribe", (req, res) => { /** @TODO hablar inconsistencia ar
   });
 });
 
-/** @TODO falta traernos todas las suscripciones de un artist */
-
-/** @TODO falta eliminación de artist y suscripciones */
 router.get("/ping",(req,res) => {
   res.status(200).json({message:'pong'})
 })
@@ -211,7 +204,7 @@ router.get("/subscriptions",(req,res) => {
   ).then(subs=> {
     res.status(200).json({
       "artistId": artistId,
-      "subscriptors": (subs[artistId]||subs[artistId].size)?[...subs[artistId]]:[]
+      "subscriptors": (subs[artistId]&&subs[artistId].size)?[...subs[artistId]]:[]
     })
   })
   .catch(e=>{
@@ -254,7 +247,6 @@ router.delete("/subscriptions", (req, res) => {
     result => res.status(200).json({})
   )
   .catch(err => {
-    console.log(err)
     if(err instanceof BadRequest){
       res.status(400).json({ status: 400, errorCode: "BAD_REQUEST" })
     }

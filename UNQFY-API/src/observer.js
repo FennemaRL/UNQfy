@@ -30,8 +30,7 @@ class Observer {
     }
     subscribeEvents(){
         for (let eventName of Object.values(events)) {
-            event.on(eventName, (payload) =>{// use arrow to not bind dist prove
-                console.log(eventName, payload)
+            event.on(eventName, (payload) =>{
                 this.notifyLogger(payload,eventName != events.ERROR ?this.getBodyEntity : this.getBodyEntityError)
             })
         }
@@ -43,7 +42,7 @@ class Observer {
             body: getBody(payload.type, payload.className,payload.affected, payload.error),
             json: true,
         };
-    rp.post(options).then(res=>console.log("funca"+res)).catch(err=>console.log("funca"+err, process.env.LOGG))
+    rp.post(options)
     }
 
     getBodyEntityError(action,ClassName,affected,error){

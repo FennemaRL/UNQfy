@@ -35,7 +35,7 @@ USER node
 
 # Comando por defecto sino se provee uno al hacer docker run
 # El comando corre el servicio
-CMD [ "node", "monitor-api" ]
+CMD [ "node", "app" ]
 
 # LISTO!
 

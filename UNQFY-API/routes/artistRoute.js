@@ -22,7 +22,7 @@ router.get("/:name/populate", async (req, res) => {
     );
 });
 // create
-router.post("", (req, res) => { /** @TODO ver double header after sent */
+router.post("", (req, res) => { 
   const { name, country } = req.body;
   const unqfyR = req.unquify;
   try {

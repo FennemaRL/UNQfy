@@ -32,7 +32,6 @@ router.post("", (req, res) => {
         .status(404)
         .json({ status: 404, errorCode: "RELATED_RESOURCE_NOT_FOUND" });
     }
-    console.log(e)
     res.status(500).json({error: e})
   }
 });

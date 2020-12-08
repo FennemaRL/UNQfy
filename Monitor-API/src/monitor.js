@@ -1,5 +1,3 @@
-const express = require("express");
-const app = express();
 const rp = require("request-promise");
 require('dotenv').config()
 
@@ -11,7 +9,6 @@ class Monitor {
   urlDiscord;
   stateListening;
   constructor(){
-    console.log(process.env.SERVICE_LIST_WIDTH_NAME, "log json parse")
     this.urlList = JSON.parse(process.env.SERVICE_LIST_WIDTH_NAME);
     this.servicesStatus=new Map();
     this.lastStatusLog = new Map();
@@ -34,8 +31,6 @@ class Monitor {
         this.lastStatusLog[name] = message
 
       rp.post({uri: `${process.env.DISCORD_URI}?wait=true`, qs: {}, json: true, body: {"content": message}})
-      .then(res => console.log(res, "Mensaje llega a Discord"))
-      .catch(err => console.log(err, "Mensaje NO llega a Discord"))
     }
   }
   startListening() {
