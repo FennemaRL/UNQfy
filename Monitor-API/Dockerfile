@@ -13,7 +13,7 @@ WORKDIR /home/node/my_node_app
 COPY package.json .
 #COPY package-lock.json .
 COPY ./src ./src
-COPY monitor-api.js .
+COPY app.js .
 #COPY app_data .
 
 # Ejecuta npm install. Esto produce que se instalen todas las dependencias necearias para correr la aplicación

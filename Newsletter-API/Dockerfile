@@ -15,7 +15,7 @@ COPY package.json .
 COPY ./src ./src
 COPY credentials.json .
 COPY token.json .
-COPY newsletter.js .
+COPY app.js .
 #COPY app_data .
 
 # Ejecuta npm install. Esto produce que se instalen todas las dependencias necearias para correr la aplicación
@@ -37,7 +37,7 @@ USER node
 
 # Comando por defecto sino se provee uno al hacer docker run
 # El comando corre el servicio
-CMD [ "node", "newsletter" ]
+CMD [ "node", "app" ]
 
 # LISTO!
 

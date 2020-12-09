@@ -26,6 +26,13 @@ class Observer {
                 };
                 rp.post(options)
             }
+            if(payload.type == actions.DELETE){
+                const options = {
+                    uri: `${process.env.NEWS}/subscriptions/${payload.affected.id}`,
+                    json: true,
+                };
+                    rp.delete(options)
+            }
       })
     }
     subscribeEvents(){

@@ -158,7 +158,6 @@ class UNQfy extends Subject{
   deleteArtist(id) {
     
     this._service.deleteArtist(id);
-    //this.notifyEvent(events.DELETEARTIST,this._service.getArtistById(id))
   }
   deleteAlbum(id) {
     this._service.deleteAlbum(id);
